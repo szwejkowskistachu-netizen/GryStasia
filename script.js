@@ -124,9 +124,30 @@ function deleteProject(index) {
 }
 
 function openGame(url) {
-    gameFrame.src = url;
-    gameModal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; 
+    // Prevent double scrollbars and scrolling background
+    document.body.style.overflow = 'hidden';
+    
+    // Clear and set src to reload the game properly
+    gameFrame.src = "about:blank";
+    
+    setTimeout(() => {
+        gameFrame.src = url;
+        gameModal.style.display = 'block';
+        
+        // Wait for iframe to load, then inject responsive CSS
+        gameFrame.onload = () => {
+            try {
+                const style = document.createElement('style');
+                style.textContent = `
+                    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #000; }
+                    canvas { max-width: 100vw !important; max-height: 100vh !important; width: auto !important; height: auto !important; object-fit: contain !important; }
+                `;
+                gameFrame.contentDocument.head.appendChild(style);
+            } catch (e) {
+                console.log("Cross-origin game detected, standard CSS scaling applied via style.css");
+            }
+        };
+    }, 10);
 }
 
 function closeGame() {

@@ -178,6 +178,7 @@ function renderProjects() {
 }
 
 function updateUI() {
+    console.log("Updating UI. isAdmin:", isAdmin);
     if (isAdmin) {
         if (addProjectSection) addProjectSection.style.display = 'block';
         if (planSection) planSection.style.display = 'none';

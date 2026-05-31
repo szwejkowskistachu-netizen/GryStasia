@@ -179,15 +179,19 @@ function closeGame() {
     document.body.style.overflow = 'auto';
 }
 
-// Drag/Pan functionality for the game frame
+// Drag/Pan functionality for the game frame via Handles
 let isDragging = false;
+let activeHandle = null;
 let startX, startY;
 let scrollLeft, scrollTop;
 
-const startDragging = (e) => {
+const startDragging = (e, handleType) => {
     isDragging = true;
+    activeHandle = handleType;
     
-    // Handle touch or mouse
+    const handleEl = document.getElementById(`pan-handle-${handleType}`);
+    if (handleEl) handleEl.classList.add('active');
+    
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     
@@ -197,13 +201,12 @@ const startDragging = (e) => {
     const content = document.querySelector('.modal-content');
     scrollLeft = content.scrollLeft;
     scrollTop = content.scrollTop;
-    content.style.cursor = 'grabbing';
 };
 
 const stopDragging = () => {
     isDragging = false;
-    const content = document.querySelector('.modal-content');
-    if (content) content.style.cursor = 'grab';
+    document.querySelectorAll('.pan-handle').forEach(h => h.classList.remove('active'));
+    activeHandle = null;
 };
 
 const move = (e) => {
@@ -216,24 +219,31 @@ const move = (e) => {
     const dy = clientY - startY;
     
     const content = document.querySelector('.modal-content');
-    content.scrollLeft = scrollLeft - dx;
-    content.scrollTop = scrollTop - dy;
+    
+    if (activeHandle === 'right') {
+        content.scrollLeft = scrollLeft - dx;
+    } else if (activeHandle === 'bottom') {
+        content.scrollTop = scrollTop - dy;
+    }
 };
 
-// Modal interaction for panning
-const modalContent = document.querySelector('.modal-content');
-if (modalContent) {
-    modalContent.style.cursor = 'grab';
-    modalContent.style.overflow = 'auto'; 
-    
-    modalContent.addEventListener('mousedown', startDragging);
-    window.addEventListener('mouseup', stopDragging);
-    window.addEventListener('mousemove', move);
-    
-    modalContent.addEventListener('touchstart', startDragging, { passive: true });
-    window.addEventListener('touchend', stopDragging);
-    window.addEventListener('touchmove', move, { passive: true });
+// Event Listeners for Handles
+const handleRight = document.getElementById('pan-handle-right');
+const handleBottom = document.getElementById('pan-handle-bottom');
+
+if (handleRight) {
+    handleRight.addEventListener('mousedown', (e) => startDragging(e, 'right'));
+    handleRight.addEventListener('touchstart', (e) => startDragging(e, 'right'), { passive: true });
 }
+if (handleBottom) {
+    handleBottom.addEventListener('mousedown', (e) => startDragging(e, 'bottom'));
+    handleBottom.addEventListener('touchstart', (e) => startDragging(e, 'bottom'), { passive: true });
+}
+
+window.addEventListener('mouseup', stopDragging);
+window.addEventListener('touchend', stopDragging);
+window.addEventListener('mousemove', move);
+window.addEventListener('touchmove', move, { passive: true });
 
 // Zamknij modal po kliknięciu poza zawartość
 window.onclick = function(event) {

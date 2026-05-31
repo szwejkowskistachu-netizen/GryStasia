@@ -165,6 +165,11 @@ function changeState(newState) {
     document.getElementById('shop-screen').style.display = 'none';
     document.getElementById('game-container').style.display = 'none';
 
+    // Show notice on mobile if not in game
+    const isMobile = window.innerWidth < 800;
+    const notice = document.getElementById('mobile-notice');
+    if (notice) notice.style.display = (isMobile && newState !== 'playing') ? 'block' : 'none';
+
     currentState = newState;
 
     if (newState === 'home') {

@@ -144,32 +144,43 @@ function openGame(url) {
                     body, html { 
                         margin: 0; 
                         padding: 0; 
-                        overflow: hidden !important; 
-                        width: 100vw !important; 
-                        height: 100vh !important; 
-                        display: flex !important; 
-                        justify-content: center !important; 
-                        align-items: center !important; 
-                        background: #000 !important; 
+                        overflow: auto !important; 
+                        width: 100%; 
+                        height: 100%; 
+                        display: block;
+                        background: #000; 
                     }
                     canvas { 
                         display: block !important;
-                        max-width: 100vw !important;
-                        max-height: 100vh !important;
-                        width: auto !important;
+                        max-width: 100% !important;
                         height: auto !important;
-                        object-fit: contain !important;
+                        margin: 0 auto;
                     }
+                    /* Specific fixes for games with layouts */
                     #game-wrapper, #screens, .screen, #game-container {
-                        width: 100vw !important;
-                        height: 100vh !important;
-                        max-width: 100vw !important;
-                        max-height: 100vh !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        display: flex !important;
-                        justify-content: center !important;
-                        align-items: center !important;
+                        min-height: 100vh;
+                        width: 100%;
+                        max-width: 1000px;
+                        margin: 0 auto;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        position: relative;
+                        left: 0;
+                        transform: none;
+                    }
+                    /* Shop fix for Brawl Stars - keep it in flow */
+                    #shop-screen {
+                        justify-content: flex-start;
+                        padding-top: 50px;
+                        overflow-y: auto;
+                    }
+                    .shop-items {
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: center;
+                        gap: 20px;
+                        padding: 20px;
                     }
                 `;
                 gameFrame.contentDocument.head.appendChild(style);

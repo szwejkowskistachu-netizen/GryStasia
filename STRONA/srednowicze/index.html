@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Średniowieczny Symulator Miasta</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="ui-layer">
+            <div id="hud">
+                <div class="resource-bar">
+                    <span id="res-wood">Drewno: 0</span>
+                    <span id="res-food">Jedzenie: 0</span>
+                    <span id="res-stone">Kamień: 0</span>
+                </div>
+                <div class="stats-bar">
+                    <span id="stat-pop">Populacja: 0</span>
+                    <span id="stat-time">Dzień: 1, Wiosna</span>
+                </div>
+            </div>
+            
+            <div id="notifications"></div>
+            
+            <div id="build-menu">
+                <h3>Budynki</h3>
+                <button class="build-btn" data-type="castle">Zamek</button>
+                <button class="build-btn" data-type="house">Dom</button>
+                <button class="build-btn" data-type="farm">Farma</button>
+                <button class="build-btn" data-type="lumberjack">Tartak</button>
+                <button class="build-btn" data-type="quarry">Kamieniołom</button>
+                <button class="build-btn" data-type="warehouse">Magazyn</button>
+            </div>
+        </div>
+        <canvas id="game-canvas"></canvas>
+    </div>
+    <script src="js/game.js"></script>
+</body>
+</html>

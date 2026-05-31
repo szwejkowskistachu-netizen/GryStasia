@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft 3D (Vanilla WebGL)</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        #crosshair {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 20px; height: 20px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            color: white; font-size: 24px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #ui {
+            position: absolute; bottom: 20px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; background: rgba(0,0,0,0.5);
+            padding: 5px; border-radius: 5px;
+        }
+        .slot {
+            width: 50px; height: 50px; margin: 0 5px;
+            border: 3px solid #555; background: #333;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slot.active { border-color: #fff; }
+        .preview { width: 30px; height: 30px; }
+        #info {
+            position: absolute; top: 10px; left: 10px;
+            color: white; background: rgba(0,0,0,0.5); padding: 10px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="c"></canvas>
+    <div id="crosshair">+</div>
+    <div id="info">Click to start<br>WASD: Move | SPACE: Jump<br>Left Click: Break | Right Click: Place</div>
+    <div id="ui"></div>
+
+    <script>
+        /** @type {HTMLCanvasElement} */
+        const canvas = document.getElementById('c');
+        const gl = canvas.getContext('webgl');
+
+        // --- Math Library ---
+        const M4 = {
+            identity: () => new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]),
+            perspective: (fov, aspect, near, far) => {
+                const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
+                const rangeInv = 1.0 / (near - far);
+                return new Float32Array([
+                    f / aspect, 0, 0, 0,
+                    0, f, 0, 0,
+                    0, 0, (near + far) * rangeInv, -1,
+                    0, 0, near * far * rangeInv * 2, 0
+                ]);
+            },
+            multiply: (a, b) => {
+                const out = new Float32Array(16);
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        out[i*4+j] = a[i*4+0]*b[0*4+j] + a[i*4+1]*b[1*4+j] + a[i*4+2]*b[2*4+j] + a[i*4+3]*b[3*4+j];
+                    }
+                }
+                return out;
+            },
+            translate: (m, x, y, z) => {
+                const t = M4.identity();
+                t[12] = x; t[13] = y; t[14] = z;
+                return M4.multiply(m, t);
+            },
+            xRotate: (m, r) => {
+                const c = Math.cos(r), s = Math.sin(r);
+                const rot = M4.identity();
+                rot[5] = c; rot[6] = s; rot[9] = -s; rot[10] = c;
+                return M4.multiply(m, rot);
+            },
+            yRotate: (m, r) => {
+                const c = Math.cos(r), s = Math.sin(r);
+                const rot = M4.identity();
+                rot[0] = c; rot[2] = -s; rot[8] = s; rot[10] = c;
+                return M4.multiply(m, rot);
+            },
+            inverse: (m) => {
+                const out = new Float32Array(16);
+                const m00 = m[0], m01 = m[1], m02 = m[2], m03 = m[3];
+                const m10 = m[4], m11 = m[5], m12 = m[6], m13 = m[7];
+                const m20 = m[8], m21 = m[9], m22 = m[10], m23 = m[11];
+                const m30 = m[12], m31 = m[13], m32 = m[14], m33 = m[15];
+                const tmp_0 = m22 * m33, tmp_1 = m32 * m23, tmp_2 = m12 * m33, tmp_3 = m32 * m13, tmp_4 = m12 * m23, tmp_5 = m22 * m13;
+                const tmp_6 = m02 * m33, tmp_7 = m32 * m03, tmp_8 = m02 * m23, tmp_9 = m22 * m03, tmp_10 = m02 * m13, tmp_11 = m12 * m03;
+                const tmp_12 = m20 * m31, tmp_13 = m30 * m21, tmp_14 = m10 * m31, tmp_15 = m30 * m11, tmp_16 = m10 * m21, tmp_17 = m20 * m11;
+                const tmp_18 = m00 * m31, tmp_19 = m30 * m01, tmp_20 = m00 * m21, tmp_21 = m20 * m01, tmp_22 = m00 * m11, tmp_23 = m10 * m01;
+
+                const t0 = (tmp_0 * m11 + tmp_3 * m21 + tmp_4 * m31) - (tmp_1 * m11 + tmp_2 * m21 + tmp_5 * m31);
+                const t1 = (tmp_1 * m01 + tmp_6 * m21 + tmp_9 * m31) - (tmp_0 * m01 + tmp_7 * m21 + tmp_8 * m31);
+                const t2 = (tmp_2 * m01 + tmp_7 * m11 + tmp_10 * m31) - (tmp_3 * m01 + tmp_6 * m11 + tmp_11 * m31);
+                const t3 = (tmp_5 * m01 + tmp_8 * m11 + tmp_11 * m21) - (tmp_4 * m01 + tmp_9 * m11 + tmp_10 * m21);
+
+                const d = 1.0 / (m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3);
+
+                out[0] = d * t0;
+                out[1] = d * t1;
+                out[2] = d * t2;
+                out[3] = d * t3;
+                out[4] = d * ((tmp_1 * m10 + tmp_2 * m20 + tmp_5 * m30) - (tmp_0 * m10 + tmp_3 * m20 + tmp_4 * m30));
+                out[5] = d * ((tmp_0 * m00 + tmp_7 * m20 + tmp_8 * m30) - (tmp_1 * m00 + tmp_6 * m20 + tmp_9 * m30));
+                out[6] = d * ((tmp_3 * m00 + tmp_6 * m10 + tmp_11 * m30) - (tmp_2 * m00 + tmp_7 * m10 + tmp_10 * m30));
+                out[7] = d * ((tmp_4 * m00 + tmp_9 * m10 + tmp_10 * m20) - (tmp_5 * m00 + tmp_8 * m10 + tmp_11 * m20));
+                out[8] = d * ((tmp_12 * m13 + tmp_15 * m23 + tmp_16 * m33) - (tmp_13 * m13 + tmp_14 * m23 + tmp_17 * m33));
+                out[9] = d * ((tmp_13 * m03 + tmp_18 * m23 + tmp_21 * m33) - (tmp_12 * m03 + tmp_19 * m23 + tmp_20 * m33));
+                out[10] = d * ((tmp_14 * m03 + tmp_19 * m13 + tmp_22 * m33) - (tmp_15 * m03 + tmp_18 * m13 + tmp_23 * m33));
+                out[11] = d * ((tmp_17 * m03 + tmp_20 * m13 + tmp_23 * m23) - (tmp_16 * m03 + tmp_21 * m13 + tmp_22 * m23));
+                out[12] = d * ((tmp_14 * m22 + tmp_17 * m32 + tmp_13 * m12) - (tmp_16 * m32 + tmp_12 * m12 + tmp_15 * m22));
+                out[13] = d * ((tmp_20 * m32 + tmp_12 * m02 + tmp_19 * m22) - (tmp_18 * m22 + tmp_21 * m32 + tmp_13 * m02));
+                out[14] = d * ((tmp_18 * m12 + tmp_23 * m32 + tmp_15 * m02) - (tmp_22 * m32 + tmp_14 * m02 + tmp_19 * m12));
+                out[15] = d * ((tmp_22 * m22 + tmp_16 * m02 + tmp_21 * m12) - (tmp_20 * m12 + tmp_23 * m22 + tmp_17 * m02));
+                return out;
+            }
+        };
+
+        // --- Shaders ---
+        const vs = `
+            attribute vec4 a_position;
+            attribute vec4 a_color;
+            attribute vec3 a_normal;
+            uniform mat4 u_matrix;
+            varying vec4 v_color;
+            varying vec3 v_normal;
+            void main() {
+                gl_Position = u_matrix * a_position;
+                v_color = a_color;
+                v_normal = a_normal;
+            }
+        `;
+        const fs = `
+            precision mediump float;
+            varying vec4 v_color;
+            varying vec3 v_normal;
+            void main() {
+                vec3 lightDir = normalize(vec3(0.5, 1.0, 0.3));
+                float light = dot(v_normal, lightDir) * 0.5 + 0.7;
+                gl_FragColor = vec4(v_color.rgb * light, v_color.a);
+            }
+        `;
+
+        function createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            return shader;
+        }
+
+        const program = gl.createProgram();
+        gl.attachShader(program, createShader(gl, gl.VERTEX_SHADER, vs));
+        gl.attachShader(program, createShader(gl, gl.FRAGMENT_SHADER, fs));
+        gl.linkProgram(program);
+
+        const posLoc = gl.getAttribLocation(program, 'a_position');
+        const colorLoc = gl.getAttribLocation(program, 'a_color');
+        const normLoc = gl.getAttribLocation(program, 'a_normal');
+        const matrixLoc = gl.getUniformLocation(program, 'u_matrix');
+
+        const posBuffer = gl.createBuffer();
+        const colorBuffer = gl.createBuffer();
+        const normBuffer = gl.createBuffer();
+
+        // --- World Data ---
+        const W = 32, H = 16, D = 32;
+        const world = new Uint8Array(W * H * D);
+        const BLOCKS = { AIR: 0, GRASS: 1, DIRT: 2, STONE: 3, WOOD: 4, LEAVES: 5 };
+        const COLORS = {
+            [BLOCKS.GRASS]: [0.3, 0.7, 0.2, 1],
+            [BLOCKS.DIRT]: [0.5, 0.3, 0.1, 1],
+            [BLOCKS.STONE]: [0.5, 0.5, 0.5, 1],
+            [BLOCKS.WOOD]: [0.4, 0.2, 0.0, 1],
+            [BLOCKS.LEAVES]: [0.1, 0.5, 0.1, 1]
+        };
+
+        function getIdx(x, y, z) {
+            if (x < 0 || x >= W || y < 0 || y >= H || z < 0 || z >= D) return -1;
+            return x + y * W + z * W * H;
+        }
+
+        // Generate Terrain
+        for (let x = 0; x < W; x++) {
+            for (let z = 0; z < D; z++) {
+                const h = Math.floor(4 + Math.sin(x * 0.2) * 2 + Math.cos(z * 0.2) * 2);
+                for (let y = 0; y < H; y++) {
+                    let b = BLOCKS.AIR;
+                    if (y < h - 1) b = BLOCKS.STONE;
+                    else if (y < h) b = BLOCKS.DIRT;
+                    else if (y === h) b = BLOCKS.GRASS;
+                    world[getIdx(x, y, z)] = b;
+                }
+            }
+        }
+
+        // --- Mesh Generation ---
+        let vertexCount = 0;
+        function updateMesh() {
+            const positions = [];
+            const colors = [];
+            const normals = [];
+
+            const addFace = (x, y, z, face, block) => {
+                const c = COLORS[block];
+                const p = [
+                    [0,0,1, 1,0,1, 1,1,1, 0,1,1], // front
+                    [1,0,0, 0,0,0, 0,1,0, 1,1,0], // back
+                    [0,1,0, 0,1,1, 1,1,1, 1,1,0], // top
+                    [0,0,1, 0,0,0, 1,0,0, 1,0,1], // bottom
+                    [0,0,0, 0,0,1, 0,1,1, 0,1,0], // left
+                    [1,0,1, 1,0,0, 1,1,0, 1,1,1]  // right
+                ][face];
+                const n = [
+                    [0,0,1], [0,0,-1], [0,1,0], [0,-1,0], [-1,0,0], [1,0,0]
+                ][face];
+
+                const indices = [0, 1, 2, 0, 2, 3];
+                for (let i of indices) {
+                    positions.push(p[i*3] + x, p[i*3+1] + y, p[i*3+2] + z);
+                    colors.push(...c);
+                    normals.push(...n);
+                }
+            };
+
+            for (let x = 0; x < W; x++) {
+                for (let y = 0; y < H; y++) {
+                    for (let z = 0; z < D; z++) {
+                        const b = world[getIdx(x, y, z)];
+                        if (b === BLOCKS.AIR) continue;
+
+                        if (getIdx(x, y + 1, z) === -1 || world[getIdx(x, y + 1, z)] === BLOCKS.AIR) addFace(x, y, z, 2, b);
+                        if (getIdx(x, y - 1, z) === -1 || world[getIdx(x, y - 1, z)] === BLOCKS.AIR) addFace(x, y, z, 3, b);
+                        if (getIdx(x, y, z + 1) === -1 || world[getIdx(x, y, z + 1)] === BLOCKS.AIR) addFace(x, y, z, 0, b);
+                        if (getIdx(x, y, z - 1) === -1 || world[getIdx(x, y, z - 1)] === BLOCKS.AIR) addFace(x, y, z, 1, b);
+                        if (getIdx(x - 1, y, z) === -1 || world[getIdx(x - 1, y, z)] === BLOCKS.AIR) addFace(x - 1, y, z, 4, b); // note: fix coords later if needed
+                        if (getIdx(x + 1, y, z) === -1 || world[getIdx(x + 1, y, z)] === BLOCKS.AIR) addFace(x, y, z, 5, b);
+                        // Left face fix
+                        if (x === 0 || world[getIdx(x - 1, y, z)] === BLOCKS.AIR) addFace(x, y, z, 4, b);
+                    }
+                }
+            }
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, normBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+            vertexCount = positions.length / 3;
+        }
+
+        // --- Player ---
+        const player = {
+            pos: [W/2, 10, D/2],
+            rot: [0, 0],
+            vel: [0, 0, 0],
+            onGround: false
+        };
+        const keys = {};
+        const hotbar = [BLOCKS.GRASS, BLOCKS.DIRT, BLOCKS.STONE, BLOCKS.WOOD, BLOCKS.LEAVES];
+        let selected = 0;
+
+        canvas.onclick = () => canvas.requestPointerLock();
+        window.onkeydown = e => keys[e.code] = true;
+        window.onkeyup = e => keys[e.code] = false;
+        window.onmousemove = e => {
+            if (document.pointerLockElement === canvas) {
+                player.rot[0] -= e.movementY * 0.002;
+                player.rot[1] -= e.movementX * 0.002;
+                player.rot[0] = Math.max(-Math.PI/2, Math.min(Math.PI/2, player.rot[0]));
+            }
+        };
+
+        function isSolid(x, y, z) {
+            const b = world[getIdx(Math.floor(x), Math.floor(y), Math.floor(z))];
+            return b !== undefined && b !== BLOCKS.AIR && b !== -1;
+        }
+
+        function update(dt) {
+            if (document.pointerLockElement !== canvas) return;
+
+            // Movement
+            const speed = 0.1;
+            const dir = [0, 0];
+            if (keys['KeyW']) { dir[0] += Math.sin(player.rot[1]); dir[1] -= Math.cos(player.rot[1]); }
+            if (keys['KeyS']) { dir[0] -= Math.sin(player.rot[1]); dir[1] += Math.cos(player.rot[1]); }
+            if (keys['KeyA']) { dir[0] -= Math.cos(player.rot[1]); dir[1] -= Math.sin(player.rot[1]); }
+            if (keys['KeyD']) { dir[0] += Math.cos(player.rot[1]); dir[1] += Math.sin(player.rot[1]); }
+
+            player.vel[0] = dir[0] * speed;
+            player.vel[2] = dir[1] * speed;
+
+            // Gravity
+            player.vel[1] -= 0.01;
+            if (keys['Space'] && player.onGround) {
+                player.vel[1] = 0.2;
+                player.onGround = false;
+            }
+
+            // Simple Collision
+            const nextX = player.pos[0] + player.vel[0];
+            const nextY = player.pos[1] + player.vel[1];
+            const nextZ = player.pos[2] + player.vel[2];
+
+            if (!isSolid(nextX, player.pos[1], player.pos[2]) && !isSolid(nextX, player.pos[1]-1.5, player.pos[2])) player.pos[0] = nextX;
+            
+            if (isSolid(player.pos[0], nextY - 1.6, player.pos[2])) {
+                player.pos[1] = Math.ceil(nextY - 1.6) + 1.6;
+                player.vel[1] = 0;
+                player.onGround = true;
+            } else {
+                player.pos[1] = nextY;
+                player.onGround = false;
+            }
+
+            if (!isSolid(player.pos[0], player.pos[1], nextZ) && !isSolid(player.pos[0], player.pos[1]-1.5, nextZ)) player.pos[2] = nextZ;
+        }
+
+        // Raycasting for interaction
+        window.onmousedown = e => {
+            if (document.pointerLockElement !== canvas) return;
+            
+            // Raycast from camera
+            let rx = player.pos[0], ry = player.pos[1], rz = player.pos[2];
+            const dx = -Math.sin(player.rot[1]) * Math.cos(player.rot[0]);
+            const dy = Math.sin(player.rot[0]);
+            const dz = Math.cos(player.rot[1]) * Math.cos(player.rot[0]);
+
+            let hit = null;
+            let prev = null;
+            for (let i = 0; i < 50; i++) {
+                rx += dx * 0.1; ry += dy * 0.1; rz += dz * 0.1;
+                const bx = Math.floor(rx), by = Math.floor(ry), bz = Math.floor(rz);
+                if (isSolid(bx, by, bz)) {
+                    hit = {x:bx, y:by, z:bz};
+                    break;
+                }
+                prev = {x:bx, y:by, z:bz};
+            }
+
+            if (hit) {
+                if (e.button === 0) { // Break
+                    world[getIdx(hit.x, hit.y, hit.z)] = BLOCKS.AIR;
+                    updateMesh();
+                } else if (e.button === 2 && prev) { // Place
+                    world[getIdx(prev.x, prev.y, prev.z)] = hotbar[selected];
+                    updateMesh();
+                }
+            }
+        };
+        window.oncontextmenu = e => e.preventDefault();
+        window.onwheel = e => {
+            if (e.deltaY > 0) selected = (selected + 1) % hotbar.length;
+            else selected = (selected - 1 + hotbar.length) % hotbar.length;
+            renderUI();
+        };
+
+        function renderUI() {
+            const ui = document.getElementById('ui');
+            ui.innerHTML = '';
+            hotbar.forEach((b, i) => {
+                const slot = document.createElement('div');
+                slot.className = 'slot' + (i === selected ? ' active' : '');
+                const prev = document.createElement('div');
+                prev.className = 'preview';
+                const c = COLORS[b];
+                prev.style.background = `rgba(${c[0]*255},${c[1]*255},${c[2]*255},1)`;
+                slot.appendChild(prev);
+                ui.appendChild(slot);
+            });
+        }
+
+        // --- Render Loop ---
+        function render() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            gl.clearColor(0.5, 0.8, 1.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.enable(gl.DEPTH_TEST);
+            gl.enable(gl.CULL_FACE);
+
+            gl.useProgram(program);
+
+            let mat = M4.perspective(Math.PI / 3, canvas.width / canvas.height, 0.1, 1000);
+            mat = M4.xRotate(mat, player.rot[0]);
+            mat = M4.yRotate(mat, player.rot[1]);
+            mat = M4.translate(mat, -player.pos[0], -player.pos[1], -player.pos[2]);
+
+            gl.uniformMatrix4fv(matrixLoc, false, mat);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+            gl.enableVertexAttribArray(posLoc);
+            gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.enableVertexAttribArray(colorLoc);
+            gl.vertexAttribPointer(colorLoc, 4, gl.FLOAT, false, 0, 0);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, normBuffer);
+            gl.enableVertexAttribArray(normLoc);
+            gl.vertexAttribPointer(normLoc, 3, gl.FLOAT, false, 0, 0);
+
+            gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
+
+            update(16);
+            requestAnimationFrame(render);
+        }
+
+        updateMesh();
+        renderUI();
+        render();
+    </script>
+</body>
+</html>

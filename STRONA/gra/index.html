@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programowanie Robotów - Bloki</title>
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <header>
+            <h1>Programowanie Robotów</h1>
+            <div id="level-info">Poziom: <span id="current-level-name">1</span></div>
+            <div id="stats">
+                Energia: <span id="energy-val">0</span> | 
+                Ruchy: <span id="moves-val">0</span>
+            </div>
+        </header>
+
+        <main>
+            <section id="editor-section">
+                <div id="visual-editor-container">
+                    <div id="blocks-palette">
+                        <h3>Klocki</h3>
+                        <div class="block" draggable="true" data-cmd="MOVE">MOVE</div>
+                        <div class="block" draggable="true" data-cmd="LEFT">LEFT</div>
+                        <div class="block" draggable="true" data-cmd="RIGHT">RIGHT</div>
+                        <div class="block" draggable="true" data-cmd="PICK">PICK</div>
+                        <div class="block" draggable="true" data-cmd="DROP">DROP</div>
+                        <div class="block" draggable="true" data-cmd="OPEN">OPEN</div>
+                        <div class="block" draggable="true" data-cmd="WAIT">WAIT</div>
+                        <div class="block block-control" draggable="true" data-cmd="REPEAT">REPEAT</div>
+                        <div class="block block-control" draggable="true" data-cmd="IF">IF</div>
+                        <div class="block block-control" draggable="true" data-cmd="END">END</div>
+                    </div>
+                    <div id="program-workspace">
+                        <h3>Twój Program (Przeciągnij klocki tutaj)</h3>
+                        <div id="blocks-list"></div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="run-btn" class="btn-primary">Uruchom</button>
+                    <button id="stop-btn" class="btn-secondary">Zatrzymaj</button>
+                    <button id="reset-btn" class="btn-danger">Reset poziomu</button>
+                    <button id="clear-btn" class="btn-secondary">Wyczyść program</button>
+                </div>
+                <div id="console"></div>
+            </section>
+
+            <section id="map-section">
+                <div id="map-container">
+                    <canvas id="game-canvas"></canvas>
+                </div>
+                <div id="inventory">
+                    <h3>Ekwipunek</h3>
+                    <ul id="inventory-list"></ul>
+                </div>
+            </section>
+        </main>
+
+        <!-- Ukryte pole na kod dla interpretera -->
+        <textarea id="code-editor" style="display: none;"></textarea>
+
+        <footer>
+            <div id="instructions">
+                <h3>Cel:</h3>
+                <p id="level-desc"></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Załadowanie gry jako jednego pliku skryptu bez modułów ES6 (dla obsługi file://) -->
+    <script src="src/js/game.js"></script>
+</body>
+</html>

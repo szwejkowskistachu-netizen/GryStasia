@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edukacyjna Platforma Testowa</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="light-theme">
+    <header>
+        <h1>Szkolny Mistrz Wiedzy</h1>
+        <div class="header-controls">
+            <button id="theme-toggle">🌓 Przełącz motyw</button>
+            <button id="stats-nav-btn">📊 Statystyki</button>
+        </div>
+    </header>
+
+    <main id="app-container">
+        <!-- Ekran Startowy -->
+        <section id="start-screen" class="screen active">
+            <h2>Witaj! Wybierz zakres nauki:</h2>
+            <div class="selection-container">
+                <div class="select-group">
+                    <label for="class-select">Klasa:</label>
+                    <select id="class-select">
+                        <option value="">Wybierz klasę</option>
+                        <option value="4">Klasa 4</option>
+                        <option value="5">Klasa 5</option>
+                        <option value="6">Klasa 6</option>
+                        <option value="7">Klasa 7</option>
+                        <option value="8">Klasa 8</option>
+                    </select>
+                </div>
+                <div class="select-group">
+                    <label for="subject-select">Przedmiot:</label>
+                    <select id="subject-select" disabled>
+                        <option value="">Najpierw wybierz klasę</option>
+                    </select>
+                </div>
+                <div class="select-group">
+                    <label for="chapter-select">Dział:</label>
+                    <select id="chapter-select" disabled>
+                        <option value="">Najpierw wybierz przedmiot</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mode-selection">
+                <label>
+                    <input type="checkbox" id="study-mode"> Tryb nauki (brak oceniania)
+                </label>
+            </div>
+            <button id="start-test-btn" disabled>Rozpocznij Test</button>
+        </section>
+
+        <!-- Ekran Testu -->
+        <section id="test-screen" class="screen">
+            <div class="test-header">
+                <h3 id="test-title">Test</h3>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" style="width: 0%;"></div>
+                </div>
+                <div id="question-counter">Pytanie 1 / 5</div>
+                <div id="timer">Czas: 10:00</div>
+            </div>
+            <div id="question-container">
+                <!-- Pytanie zostanie wstawione tutaj przez JS -->
+            </div>
+            <div class="test-controls">
+                <button id="next-q-btn">Następne pytanie</button>
+                <button id="finish-test-btn" class="hidden">Sprawdź test</button>
+            </div>
+        </section>
+
+        <!-- Ekran Wyników -->
+        <section id="result-screen" class="screen">
+            <h2>Podsumowanie Testu</h2>
+            <div class="result-summary">
+                <p>Poprawne odpowiedzi: <span id="correct-count">0</span></p>
+                <p>Błędne odpowiedzi: <span id="wrong-count">0</span></p>
+                <p>Wynik procentowy: <span id="percentage-result">0%</span></p>
+                <p>Ocena: <span id="grade-result">-</span></p>
+            </div>
+            <div id="answers-review">
+                <!-- Szczegółowy przegląd odpowiedzi -->
+            </div>
+            <button id="back-to-start-btn">Wróć do początku</button>
+            <button id="retry-test-btn">Losuj nowy test</button>
+        </section>
+
+        <!-- Panel Statystyk -->
+        <section id="stats-screen" class="screen">
+            <h2>Twoje Statystyki</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Liczba testów</h4>
+                    <p id="total-tests">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Średnia ocen</h4>
+                    <p id="avg-grade">-</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Średnia procentowa</h4>
+                    <p id="avg-percentage">0%</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Najlepszy wynik</h4>
+                    <p id="best-score">0%</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Najgorszy wynik</h4>
+                    <p id="worst-score">0%</p>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="progressChart"></canvas>
+            </div>
+
+            <h3>Historia wyników</h3>
+            <div class="filters">
+                <select id="filter-subject">
+                    <option value="all">Wszystkie przedmioty</option>
+                </select>
+            </div>
+            <table id="history-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Przedmiot</th>
+                        <th>Dział</th>
+                        <th>Wynik</th>
+                        <th>Ocena</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                </tbody>
+            </table>
+            <button id="close-stats-btn">Zamknij</button>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💘 Miłosny Wykrywacz Kłamstw</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --accent-color: #ff004c;
+            --secondary-color: #ff6b8b;
+            --text-color: #ffffff;
+            --glow: 0 0 10px rgba(255, 0, 76, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            padding: 2rem;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 4rem;
+            letter-spacing: 3px;
+            color: var(--accent-color);
+            text-shadow: var(--glow), 0 0 20px rgba(255, 0, 76, 0.5);
+            margin-bottom: 0.5rem;
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 3rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .heart-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .heart {
+            font-size: 5rem;
+            color: var(--accent-color);
+            text-shadow: var(--glow);
+            animation: beat 0.8s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+            display: inline-block;
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 0, 76, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: var(--glow);
+        }
+
+        button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #scanning-section {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .scanner-visual {
+            height: 4px;
+            background: rgba(255, 0, 76, 0.2);
+            width: 100%;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .scanner-bar {
+            position: absolute;
+            height: 100%;
+            width: 30%;
+            background: var(--accent-color);
+            box-shadow: var(--glow);
+            animation: scan 1.5s infinite ease-in-out;
+        }
+
+        .status-msg {
+            font-style: italic;
+            height: 1.5rem;
+            color: var(--secondary-color);
+        }
+
+        #result-section {
+            display: none;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .result-label {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .truth {
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .lie {
+            color: #ff004c;
+            text-shadow: 0 0 20px rgba(255, 0, 76, 0.5);
+        }
+
+        .comment {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 2px solid white;
+            font-size: 1.2rem;
+            padding: 0.8rem 1.5rem;
+            opacity: 0.7;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 1;
+        }
+
+        @keyframes beat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.1); }
+            60% { transform: scale(1); }
+        }
+
+        @keyframes scan {
+            0% { left: -30%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes pulse-glow {
+            from { text-shadow: 0 0 10px rgba(255, 0, 76, 0.5); }
+            to { text-shadow: 0 0 25px rgba(255, 0, 76, 0.9); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Decorative Background */
+        .bg-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-heart {
+            position: absolute;
+            color: rgba(255, 0, 76, 0.05);
+            font-size: 2rem;
+            animation: float 10s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-elements" id="bg-elements"></div>
+
+    <div class="container">
+        <h1>💘 MIŁOSNY WYKRYWACZ KŁAMSTW</h1>
+        <h2>Czy naprawdę mówi prawdę?</h2>
+
+        <div id="main-ui">
+            <div class="heart-container">
+                <span class="heart">❤</span>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="question" placeholder="Wpisz pytanie (np. Czy on mnie kocha?)" autocomplete="off">
+            </div>
+
+            <button id="detect-btn">WYKRYJ KŁAMSTWO</button>
+        </div>
+
+        <div id="scanning-section">
+            <div class="heart-container">
+                <span class="heart" style="animation-duration: 0.4s;">❤</span>
+            </div>
+            <div class="status-msg" id="status-msg">Inicjalizacja skanera...</div>
+            <div class="scanner-visual">
+                <div class="scanner-bar"></div>
+            </div>
+            <p>Analizuję mikrodreszcze i poziom euforii...</p>
+        </div>
+
+        <div id="result-section">
+            <div id="result-display">
+                <!-- Rezultat wpadnie tutaj -->
+            </div>
+            <button class="reset-btn" id="reset-btn">SPRAWDŹ PONOWNIE</button>
+        </div>
+    </div>
+
+    <script>
+        const questionInput = document.getElementById('question');
+        const detectBtn = document.getElementById('detect-btn');
+        const mainUi = document.getElementById('main-ui');
+        const scanningSection = document.getElementById('scanning-section');
+        const statusMsg = document.getElementById('status-msg');
+        const resultSection = document.getElementById('result-section');
+        const resultDisplay = document.getElementById('result-display');
+        const resetBtn = document.getElementById('reset-btn');
+        const bgElements = document.getElementById('bg-elements');
+
+        const scanningMessages = [
+            "Analizuję tętno serca...",
+            "Skanuję poziom oksytocyny...",
+            "Sprawdzam historię spojrzeń...",
+            "Mierzę rozszerzenie źrenic...",
+            "Przeszukuję bazę westchnień...",
+            "Wykrywam drżenie głosu...",
+            "Analizuję mowę ciała..."
+        ];
+
+        const truthComments = [
+            "Serce nie kłamie. Miłość jest autentyczna. 💖",
+            "Czysta prawda! To uczucie jest silniejsze niż grawitacja. ✨",
+            "Wykryto 100% szczerości. Możesz spać spokojnie. 🥰",
+            "Prawda! Twoje serce właśnie wykonało radosne fikołki. 🌈"
+        ];
+
+        const lieComments = [
+            "Wykryto 94% fałszu. Ratuj się, póki możesz. 💔",
+            "KŁAMSTWO! Skaner spłonął od nadmiaru bajeczek. 🔥",
+            "Uwaga: Poziom szczerości bliski zeru. Czas na poważną rozmowę. 🤨",
+            "Nos pinokia właśnie przebił ekran. To nie jest prawda! 🤥"
+        ];
+
+        // Background heart decoration
+        function createBgHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('bg-heart');
+            heart.innerHTML = '❤';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+            heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            bgElements.appendChild(heart);
+            setTimeout(() => heart.remove(), 10000);
+        }
+        setInterval(createBgHeart, 1000);
+
+        detectBtn.addEventListener('click', () => {
+            if (questionInput.value.trim() === "") {
+                alert("Najpierw wpisz pytanie lub imię!");
+                return;
+            }
+
+            // Start animation
+            mainUi.style.display = 'none';
+            scanningSection.style.display = 'block';
+
+            let msgIndex = 0;
+            const msgInterval = setInterval(() => {
+                statusMsg.textContent = scanningMessages[msgIndex % scanningMessages.length];
+                msgIndex++;
+            }, 600);
+
+            // Simulation duration 2-3 seconds
+            setTimeout(() => {
+                clearInterval(msgInterval);
+                showResult();
+            }, 2500 + Math.random() * 1000);
+        });
+
+        function showResult() {
+            scanningSection.style.display = 'none';
+            resultSection.style.display = 'block';
+
+            const isTruth = Math.random() > 0.5;
+            const percentage = isTruth ? 0 : Math.floor(Math.random() * 30 + 70);
+            
+            const label = isTruth ? '✅ PRAWDA' : '❌ KŁAMSTWO';
+            const comments = isTruth ? truthComments : lieComments;
+            const comment = comments[Math.floor(Math.random() * comments.length)];
+            
+            resultDisplay.innerHTML = `
+                <div class="result-label ${isTruth ? 'truth' : 'lie'}">${label}</div>
+                <div class="comment">${comment}</div>
+            `;
+        }
+
+        resetBtn.addEventListener('click', () => {
+            resultSection.style.display = 'none';
+            mainUi.style.display = 'block';
+            questionInput.value = '';
+            statusMsg.textContent = "Inicjalizacja skanera...";
+        });
+
+        // Add "Enter" key support
+        questionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') detectBtn.click();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "Historia i sprzęt": [
+    {"question": "Co jest sercem komputera?", "options": ["Procesor", "Monitor", "Klawiatura", "Mysz"], "answer": "Procesor"},
+    {"question": "Do czego służy RAM?", "options": ["Pamięć operacyjna", "Zapisywanie zdjęć", "Drukowanie", "Internet"], "answer": "Pamięć operacyjna"},
+    {"question": "Urządzenie wyjściowe to:", "options": ["Monitor", "Klawiatura", "Mysz", "Skaner"], "answer": "Monitor"},
+    {"question": "Skrót klawiszowy do kopiowania to:", "options": ["Ctrl + C", "Ctrl + V", "Ctrl + X", "Ctrl + Z"], "answer": "Ctrl + C"},
+    {"question": "Bit to:", "options": ["Najmniejsza jednostka informacji", "Rodzaj procesora", "Część monitora", "Kabel"], "answer": "Najmniejsza jednostka informacji"}
+  ],
+  "Internet i bezpieczeństwo": [
+    {"question": "Silne hasło powinno zawierać:", "options": ["Litery, cyfry i znaki specjalne", "Tylko imię", "Samą datę urodzenia", "1234"], "answer": "Litery, cyfry i znaki specjalne"},
+    {"question": "Wirus komputerowy to:", "options": ["Szkodliwe oprogramowanie", "Rodzaj bakterii", "Uszkodzony kabel", "Brudny ekran"], "answer": "Szkodliwe oprogramowanie"}
+  ]
+}

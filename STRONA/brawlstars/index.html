@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brawl Stars Clone</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-wrapper">
+        <!-- Main Menu / Home Screen -->
+        <div id="home-screen" class="screen">
+            <h1>BRAWL STARS CLONE</h1>
+            <div id="user-info">
+                <div id="trophy-display">🏆 <span id="trophy-count">0</span></div>
+                <div id="gem-display">💎 <span id="gem-count">0</span></div>
+                <div id="match-counter" style="color: #3498db; font-weight: bold; margin-top: 5px;">0/3 Matches</div>
+                <div style="font-size: 12px; margin-top: 5px; color: #aaa;">Kill enemies to get gems!</div>
+            </div>
+            <div id="main-brawler-display">
+                <button id="open-drop-btn" onclick="tryOpenPendingDrop()" class="open-btn" style="display:none; margin-bottom: 20px; background: #9b59b6; color: white; padding: 20px;">OPEN STARR DROP (0)</button>
+                <div id="selected-brawler-img"></div>
+                <h2 id="selected-brawler-name">Borys</h2>
+            </div>
+            <div class="menu-buttons">
+                <button onclick="changeState('playing')" class="play-btn">BRAWL!</button>
+                <div class="side-buttons">
+                    <button onclick="changeState('brawlers')">Brawlers</button>
+                    <button onclick="changeState('maps')">Maps</button>
+                    <button onclick="changeState('shop')">Shop</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Selection Screen -->
+        <div id="maps-screen" class="screen" style="display:none;">
+            <h2>SELECT MAP</h2>
+            <div class="map-list">
+                <!-- Dynamically populated by game.js -->
+            </div>
+            <button onclick="changeState('home')" class="back-btn">Back</button>
+        </div>
+
+        <!-- Brawler Selection Screen -->
+        <div id="brawlers-screen" class="screen" style="display:none;">
+            <h2>SELECT BRAWLER</h2>
+            <div class="brawler-list">
+                <!-- Dynamically populated by game.js -->
+            </div>
+            <button onclick="changeState('home')" class="back-btn">Back</button>
+        </div>
+
+        <!-- Shop Screen -->
+        <div id="shop-screen" class="screen" style="display:none;">
+            <h2>SHOP</h2>
+            <div class="shop-items">
+                <div class="shop-item" onclick="buyShopItem('starr_drop')">
+                    <h3>Starr Drop</h3>
+                    <p>7 Gems</p>
+                </div>
+                <div class="shop-item" onclick="buyShopItem('mega_box')">
+                    <h3>Mega Box</h3>
+                    <p>15 Gems</p>
+                </div>
+                <div class="shop-item" onclick="buyShopItem('star_shelly')" style="background: #f1c40f; color: #000;">
+                    <h3>Skin: Star Borys</h3>
+                    <p>FREE</p>
+                </div>
+            </div>
+            <button onclick="changeState('home')" class="back-btn">Back</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-container" class="screen" style="display:none;">
+            <canvas id="gameCanvas"></canvas>
+            <div id="ui-overlay">
+                <div id="health-bar-container">
+                    <div id="health-bar"></div>
+                </div>
+                <div id="ammo-container">
+                    <div class="ammo-slot"></div>
+                    <div class="ammo-slot"></div>
+                    <div class="ammo-slot"></div>
+                </div>
+                <div id="super-bar-container">
+                    <div id="super-bar"></div>
+                </div>
+                <div id="score">Score: 0</div>
+                <button id="exit-game" onclick="exitGame()">Exit</button>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

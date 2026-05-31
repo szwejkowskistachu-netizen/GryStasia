@@ -1,0 +1,21 @@
+{
+  "Komórka i jej budowa": [
+    {"question": "Co jest 'mózgiem' komórki?", "options": ["Jądro komórkowe", "Mitochondrium", "Błona komórkowa", "Wakuola"], "answer": "Jądro komórkowe"},
+    {"question": "Gdzie w komórce powstaje energia?", "options": ["W mitochondriach", "W jądrze", "W cytoplazmie", "W rybosomach"], "answer": "W mitochondriach"}
+  ],
+  "Świat roślin": [
+    {"question": "Proces wytwarzania pokarmu przez rośliny to:", "options": ["Fotosynteza", "Oddychanie", "Parowanie", "Kiełkowanie"], "answer": "Fotosynteza"},
+    {"question": "Zielony barwnik w liściach to:", "options": ["Chlorofil", "Karoten", "Hemoglobina", "Melanina"], "answer": "Chlorofil"}
+  ],
+  "Ciało człowieka": [
+    {"question": "Ile komór ma serce człowieka?", "options": ["2", "4", "1", "3"], "answer": "2"},
+    {"question": "Największy organ człowieka to:", "options": ["Skóra", "Wątroba", "Płuca", "Jelito cienkie"], "answer": "Skóra"}
+  ],
+  "Kręgowce": [
+    {"question": "Do jakiej grupy zwierząt należy pies?", "options": ["Ssaki", "Gady", "Płazy", "Ptaki"], "answer": "Ssaki"},
+    {"question": "Ryby oddychają za pomocą:", "options": ["Skrzeli", "Płuc", "Skóry", "Tchawek"], "answer": "Skrzeli"}
+  ],
+  "Ekosystemy": [
+    {"question": "Zależność, w której oba organizmy odnoszą korzyść to:", "options": ["Symbioza", "Pasożytnictwo", "Drapieżnictwo", "Konkurencja"], "answer": "Symbioza"}
+  ]
+}

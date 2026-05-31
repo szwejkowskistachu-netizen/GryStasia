@@ -1,0 +1,14 @@
+{
+  "Liczby potęgowe": [
+    {"question": "2^5 to:", "options": ["32", "16", "64", "10"], "answer": "32"}
+  ],
+  "Statystyka i prawdopodobieństwo": [
+    {"question": "Średnia z liczb 2, 4, 6 to:", "options": ["4", "3", "5", "12"], "answer": "4"}
+  ],
+  "Bryły - Graniastosłupy": [
+    {"question": "Ile wierzchołków ma sześcian?", "options": ["8", "6", "12", "4"], "answer": "8"}
+  ],
+  "Zadania tekstowe": [
+    {"question": "Prędkość to droga podzielona przez:", "options": ["Czas", "Masę", "Przyspieszenie", "Siłę"], "answer": "Czas"}
+  ]
+}

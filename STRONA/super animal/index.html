@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Pet World</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+        }
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            color: white;
+            text-shadow: 2px 2px 2px rgba(0,0,0,0.8);
+        }
+        .debug-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">
+            <div class="debug-info" id="debug">
+                Inicjalizacja...
+            </div>
+        </div>
+    </div>
+    
+    <!-- Kolejność skryptów jest ważna dla braku modułów -->
+    <script src="src/core/engine.js"></script>
+    <script src="src/entities/creatureGenerator.js"></script>
+    <script src="src/world/worldManager.js"></script>
+    <script src="src/systems/playerSystem.js"></script>
+    <script src="src/systems/aiSystem.js"></script>
+    <script src="src/systems/tradeSystem.js"></script>
+    <script src="src/main.js"></script>
+</body>
+</html>

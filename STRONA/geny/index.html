@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecosystem AI Simulation 2.0</title>
+    <style>
+        :root {
+            --bg: #0a0f0a;
+            --panel: #1a221a;
+            --text: #c0d0c0;
+            --accent: #4caf50;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
+        #viewport {
+            flex-grow: 1;
+            position: relative;
+            background: radial-gradient(circle, #152015 0%, #0a0f0a 100%);
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #ui {
+            width: 350px;
+            background-color: var(--panel);
+            border-left: 2px solid #2a3a2a;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 15px;
+            font-size: 0.9rem;
+        }
+        h1 { font-size: 1.2rem; color: var(--accent); margin-top: 0; border-bottom: 1px solid #2a3a2a; padding-bottom: 10px; }
+        h2 { font-size: 1rem; color: #81c784; margin: 15px 0 5px 0; }
+        .section { background: #253325; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        .stat-row { display: flex; justify-content: space-between; margin: 3px 0; }
+        .stat-val { font-weight: bold; color: #fff; }
+        .species-item { 
+            border-left: 4px solid #fff; 
+            padding-left: 10px; 
+            margin-bottom: 8px; 
+            background: #1e2a1e; 
+            padding: 5px;
+            font-size: 0.8rem;
+        }
+        #controls { display: flex; flex-direction: column; gap: 8px; }
+        button { 
+            background: var(--accent); border: none; color: white; padding: 8px; 
+            border-radius: 3px; cursor: pointer; font-weight: bold;
+        }
+        button:hover { background: #45a049; }
+        .instructions { font-size: 0.75rem; color: #88a088; line-height: 1.3; }
+        #log { font-size: 0.7rem; color: #aaa; max-height: 100px; overflow-y: auto; background: #000; padding: 5px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div id="viewport">
+        <canvas id="simCanvas"></canvas>
+    </div>
+    <div id="ui">
+        <h1>🧬 Ecosystem AI 2.0</h1>
+        
+        <div class="instructions section">
+            <p><strong>Human (White Dot):</strong> WASD/Arrows to move.</p>
+            <p>Goal: Explore the forest, observe species, and survive. Creatures react to your presence based on their DNA.</p>
+        </div>
+
+        <div id="controls" class="section">
+            <button id="pauseBtn">Pause Simulation</button>
+            <button id="resetBtn">Re-seed World</button>
+            <div class="stat-row">
+                <span>Sim Speed:</span>
+                <input type="range" id="speedRange" min="1" max="10" value="1">
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="stat-row"><span>World Ticks:</span> <span id="tickVal" class="stat-val">0</span></div>
+            <div class="stat-row"><span>Total Population:</span> <span id="popVal" class="stat-val">0</span></div>
+            <div class="stat-row"><span>Plants:</span> <span id="plantVal" class="stat-val">0</span></div>
+            <div class="stat-row"><span>Human Health:</span> <span id="hpVal" class="stat-val">100</span></div>
+        </div>
+
+        <h2>🐾 Active Species</h2>
+        <div id="speciesList"></div>
+
+        <h2>📜 Event Log</h2>
+        <div id="log">Welcome to the ecosystem...</div>
+    </div>
+
+    <script>
+        // --- CONSTANTS & UTILS ---
+        const CONFIG = {
+            INITIAL_PLANTS: 150,
+            MAX_PLANTS: 400,
+            PLANT_ENERGY: 25,
+            MEAT_ENERGY: 60,
+            INITIAL_NPCS: 60,
+            MUTATION_RATE: 0.15,
+            SPECIATION_THRESHOLD: 0.25, // 25% difference creates new species
+            WORLD_W: 1500,
+            WORLD_H: 1000
+        };
+
+        const logEl = document.getElementById('log');
+        function addLog(msg) {
+            const div = document.createElement('div');
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logEl.prepend(div);
+            if (logEl.childNodes.length > 20) logEl.removeChild(logEl.lastChild);
+        }
+
+        // --- DNA SYSTEM ---
+        class DNA {
+            constructor(genome = null) {
+                // Default genome: string-like structure
+                // SPD: Speed, VIS: Vision, AGR: Aggression, REP: Reproduction Threshold, 
+                // MET: Metabolism, DEF: Defense, HNT: Hunt skill, FLE: Flee urge
+                if (genome) {
+                    this.genome = { ...genome };
+                } else {
+                    this.genome = {
+                        SPD: 1 + Math.random() * 3,
+                        VIS: 60 + Math.random() * 120,
+                        AGR: Math.random() * 100,
+                        REP: 120 + Math.random() * 150,
+                        MET: 0.1 + Math.random() * 0.1,
+                        DEF: Math.random() * 50,
+                        HNT: Math.random() * 50,
+                        FLE: Math.random() * 100
+                    };
+                }
+            }
+
+            toString() {
+                return Object.entries(this.genome)
+                    .map(([k, v]) => `${k}:${Math.round(v)}`)
+                    .join('|');
+            }
+
+            mutate() {
+                const newGenome = { ...this.genome };
+                for (let key in newGenome) {
+                    if (Math.random() < CONFIG.MUTATION_RATE) {
+                        const mod = 1 + (Math.random() * 0.4 - 0.2); // +/- 20%
+                        newGenome[key] *= mod;
+                        // Constraints
+                        if (key === 'SPD') newGenome[key] = Math.max(0.5, Math.min(8, newGenome[key]));
+                        if (key === 'VIS') newGenome[key] = Math.max(20, Math.min(500, newGenome[key]));
+                        if (key === 'AGR') newGenome[key] = Math.max(0, Math.min(100, newGenome[key]));
+                        if (key === 'MET') newGenome[key] = Math.max(0.01, newGenome[key]);
+                    }
+                }
+                // Small chance to lose/gain a gene property? (Simplified: just numerical mutation)
+                return new DNA(newGenome);
+            }
+
+            static compare(dna1, dna2) {
+                let diff = 0;
+                let keys = Object.keys(dna1.genome);
+                keys.forEach(k => {
+                    const v1 = dna1.genome[k];
+                    const v2 = dna2.genome[k];
+                    const max = Math.max(v1, v2, 1);
+                    diff += Math.abs(v1 - v2) / max;
+                });
+                return diff / keys.length;
+            }
+        }
+
+        // --- BIOLOGY ---
+        class Species {
+            constructor(id, dna, color) {
+                this.id = id;
+                this.baseDNA = dna;
+                this.name = this.generateName();
+                this.color = color;
+                this.count = 0;
+            }
+
+            generateName() {
+                const prefixes = ['Neo', 'Zora', 'Vulp', 'Ursa', 'Cyto', 'Exo', 'Prim'];
+                const suffixes = ['don', 'rax', 'is', 'us', 'oid', 'vax'];
+                return prefixes[Math.floor(Math.random() * prefixes.length)] + 
+                       suffixes[Math.floor(Math.random() * suffixes.length)] + 
+                       "-" + this.id.toString(16).toUpperCase();
+            }
+        }
+
+        class Organism {
+            constructor(x, y, energy, dna, isHuman = false) {
+                this.x = x;
+                this.y = y;
+                this.energy = energy;
+                this.dna = dna;
+                this.isHuman = isHuman;
+                this.angle = Math.random() * Math.PI * 2;
+                this.age = 0;
+                this.species = null;
+                this.target = null;
+                this.type = dna.genome.AGR > 60 ? 'Predator' : 'Herbivore';
+            }
+
+            update(world, keys) {
+                this.age++;
+                if (this.isHuman) {
+                    this.handleHumanInput(keys);
+                    this.energy -= 0.05; // Human metabolism
+                } else {
+                    const moveCost = (this.dna.genome.SPD * 0.04) + (this.dna.genome.VIS * 0.001);
+                    this.energy -= (this.dna.genome.MET + moveCost);
+                    this.think(world);
+                }
+                this.move(world);
+            }
+
+            handleHumanInput(keys) {
+                let dx = 0, dy = 0;
+                if (keys['KeyW'] || keys['ArrowUp']) dy -= 1;
+                if (keys['KeyS'] || keys['ArrowDown']) dy += 1;
+                if (keys['KeyA'] || keys['ArrowLeft']) dx -= 1;
+                if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
+
+                if (dx !== 0 || dy !== 0) {
+                    this.angle = Math.atan2(dy, dx);
+                    this.isMoving = true;
+                } else {
+                    this.isMoving = false;
+                }
+            }
+
+            think(world) {
+                const vis = this.dna.genome.VIS;
+                const agr = this.dna.genome.AGR;
+                const fle = this.dna.genome.FLE;
+
+                let bestTarget = null;
+                let minDist = vis;
+                let targetType = null;
+
+                // 1. Check for threats (Fleeing)
+                for (let other of world.organisms) {
+                    if (other === this) continue;
+                    const d = this.dist(other);
+                    if (d < vis) {
+                        // Flee from predators or aggressive entities (including human if aggressive)
+                        if (other.dna.genome.AGR > 70 && d < 100 && fle > 30) {
+                            this.angle = Math.atan2(this.y - other.y, this.x - other.x);
+                            this.isMoving = true;
+                            return; // Priority is survival
+                        }
+                    }
+                }
+
+                // 2. Seek goal (Predators hunt, Herbivores eat plants)
+                if (this.type === 'Predator') {
+                    for (let other of world.organisms) {
+                        if (other === this || other.species === this.species) continue;
+                        const d = this.dist(other);
+                        if (d < minDist) {
+                            minDist = d;
+                            bestTarget = other;
+                            targetType = 'prey';
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < world.plants.length; i++) {
+                        const p = world.plants[i];
+                        const d = this.dist(p);
+                        if (d < minDist) {
+                            minDist = d;
+                            bestTarget = { x: p.x, y: p.y, index: i };
+                            targetType = 'plant';
+                        }
+                    }
+                }
+
+                if (bestTarget) {
+                    this.angle = Math.atan2(bestTarget.y - this.y, bestTarget.x - this.x);
+                    this.isMoving = true;
+                    this.target = { type: targetType, ref: bestTarget };
+                } else {
+                    this.angle += (Math.random() - 0.5) * 0.3;
+                    this.isMoving = true;
+                }
+            }
+
+            move(world) {
+                if (this.isHuman && !this.isMoving) return;
+                const spd = this.isHuman ? 4 : this.dna.genome.SPD;
+                this.x += Math.cos(this.angle) * spd;
+                this.y += Math.sin(this.angle) * spd;
+
+                // Bounds check with bounce/slide
+                if (this.x < 0 || this.x > world.width) { this.x = Math.max(0, Math.min(world.width, this.x)); this.angle = Math.PI - this.angle; }
+                if (this.y < 0 || this.y > world.height) { this.y = Math.max(0, Math.min(world.height, this.y)); this.angle = -this.angle; }
+            }
+
+            dist(other) {
+                return Math.sqrt((this.x - other.x)**2 + (this.y - other.y)**2);
+            }
+        }
+
+        // --- ENGINE ---
+        class Simulation {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.width = CONFIG.WORLD_W;
+                this.height = CONFIG.WORLD_H;
+                this.organisms = [];
+                this.plants = [];
+                this.corpses = [];
+                this.species = [];
+                this.ticks = 0;
+                this.keys = {};
+                this.isRunning = false;
+                this.speed = 1;
+                this.nextSpeciesId = 1;
+
+                window.addEventListener('keydown', e => this.keys[e.code] = true);
+                window.addEventListener('keyup', e => this.keys[e.code] = false);
+            }
+
+            init() {
+                this.organisms = [];
+                this.plants = [];
+                this.corpses = [];
+                this.species = [];
+                this.ticks = 0;
+                this.nextSpeciesId = 1;
+
+                // Human
+                this.human = new Organism(this.width/2, this.height/2, 100, new DNA({AGR:0, SPD:4, VIS:200, MET:0.01}), true);
+                this.organisms.push(this.human);
+
+                // Initial Plants
+                for(let i=0; i<CONFIG.INITIAL_PLANTS; i++) this.spawnPlant();
+
+                // Initial Pop
+                for(let i=0; i<CONFIG.INITIAL_NPCS; i++) {
+                    const dna = new DNA();
+                    const org = new Organism(Math.random()*this.width, Math.random()*this.height, 80, dna);
+                    this.assignSpecies(org);
+                    this.organisms.push(org);
+                }
+
+                addLog("World initialized. Human dropped into forest.");
+            }
+
+            spawnPlant() {
+                this.plants.push({ x: Math.random()*this.width, y: Math.random()*this.height });
+            }
+
+            assignSpecies(org) {
+                let found = null;
+                for(let s of this.species) {
+                    if (DNA.compare(org.dna, s.baseDNA) < CONFIG.SPECIATION_THRESHOLD) {
+                        found = s;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    org.species = found;
+                } else {
+                    const newColor = `hsl(${Math.random()*360}, 70%, 60%)`;
+                    const newS = new Species(this.nextSpeciesId++, org.dna, newColor);
+                    this.species.push(newS);
+                    org.species = newS;
+                    addLog(`New species discovered: ${newS.name}`);
+                }
+            }
+
+            tick() {
+                this.ticks++;
+
+                // Growth
+                if (this.plants.length < CONFIG.MAX_PLANTS && this.ticks % 3 === 0) this.spawnPlant();
+
+                // Decay corpses
+                for(let i=this.corpses.length-1; i>=0; i--) {
+                    this.corpses[i].energy -= 0.1;
+                    if (this.corpses[i].energy <= 0) this.corpses.splice(i, 1);
+                }
+
+                // Update Organisms
+                for(let i=this.organisms.length-1; i>=0; i--) {
+                    const org = this.organisms[i];
+                    org.update(this, this.keys);
+
+                    // Interactions
+                    if (org.type === 'Herbivore') {
+                        for(let j=this.plants.length-1; j>=0; j--) {
+                            const p = this.plants[j];
+                            if (Math.abs(org.x - p.x) < 10 && Math.abs(org.y - p.y) < 10) {
+                                org.energy += CONFIG.PLANT_ENERGY;
+                                this.plants.splice(j, 1);
+                                break;
+                            }
+                        }
+                    } else if (org.type === 'Predator' || org.isHuman) {
+                        // Hunt or Combat
+                        for(let other of this.organisms) {
+                            if (other === org) continue;
+                            if (Math.abs(org.x - other.x) < 12 && Math.abs(org.y - other.y) < 12) {
+                                if (org.isHuman && this.keys['Space']) { // Human manual attack
+                                    other.energy -= 20;
+                                    org.energy -= 2;
+                                } else if (!org.isHuman && org.dna.genome.AGR > 50) {
+                                    // Combat math
+                                    const attack = org.dna.genome.HNT + (Math.random()*20);
+                                    const defense = other.dna.genome.DEF + (Math.random()*20);
+                                    if (attack > defense) {
+                                        other.energy -= 5;
+                                        org.energy += 2;
+                                    }
+                                }
+                            }
+                        }
+                        // Scavenge
+                        for(let j=this.corpses.length-1; j>=0; j--) {
+                            const c = this.corpses[j];
+                            if (Math.abs(org.x - c.x) < 15 && Math.abs(org.y - c.y) < 15) {
+                                org.energy += 10;
+                                c.energy -= 10;
+                            }
+                        }
+                    }
+
+                    // Reproduction
+                    if (!org.isHuman && org.energy > org.dna.genome.REP) {
+                        org.energy /= 2;
+                        const childDNA = org.dna.mutate();
+                        const child = new Organism(org.x, org.y, org.energy, childDNA);
+                        this.assignSpecies(child);
+                        this.organisms.push(child);
+                    }
+
+                    // Death
+                    if (org.energy <= 0) {
+                        if (org.isHuman) {
+                            addLog("The human has perished. Respawning...");
+                            org.energy = 100;
+                            org.x = this.width/2;
+                            org.y = this.height/2;
+                        } else {
+                            this.corpses.push({ x: org.x, y: org.y, energy: CONFIG.MEAT_ENERGY });
+                            this.organisms.splice(i, 1);
+                        }
+                    }
+                }
+
+                // Cleanup extinct species
+                this.species.forEach(s => s.count = 0);
+                this.organisms.forEach(o => { if(o.species) o.species.count++ });
+                this.species = this.species.filter(s => s.count > 0 || s.id === -1);
+            }
+
+            render() {
+                const { ctx, canvas } = this;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Camera follow human
+                ctx.save();
+                const camX = -this.human.x + canvas.width/2;
+                const camY = -this.human.y + canvas.height/2;
+                ctx.translate(camX, camY);
+
+                // World border
+                ctx.strokeStyle = '#2a3a2a';
+                ctx.strokeRect(0, 0, this.width, this.height);
+
+                // Plants
+                ctx.fillStyle = '#2e7d32';
+                for(let p of this.plants) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
+                    ctx.fill();
+                }
+
+                // Corpses
+                ctx.fillStyle = '#5d4037';
+                for(let c of this.corpses) {
+                    ctx.fillRect(c.x-4, c.y-4, 8, 8);
+                }
+
+                // Organisms
+                for(let org of this.organisms) {
+                    ctx.save();
+                    ctx.translate(org.x, org.y);
+                    ctx.rotate(org.angle);
+
+                    if (org.isHuman) {
+                        ctx.fillStyle = '#fff';
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = '#fff';
+                    } else {
+                        ctx.fillStyle = org.species ? org.species.color : '#888';
+                    }
+
+                    // Shape: Triangle
+                    ctx.beginPath();
+                    ctx.moveTo(10, 0);
+                    ctx.lineTo(-6, -6);
+                    ctx.lineTo(-6, 6);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Energy bar for selected/close ones?
+                    ctx.restore();
+                }
+
+                ctx.restore();
+            }
+
+            updateUI() {
+                document.getElementById('tickVal').textContent = this.ticks;
+                document.getElementById('popVal').textContent = this.organisms.length;
+                document.getElementById('plantVal').textContent = this.plants.length;
+                document.getElementById('hpVal').textContent = Math.floor(this.human.energy);
+
+                const list = document.getElementById('speciesList');
+                list.innerHTML = '';
+                this.species.sort((a,b) => b.count - a.count).slice(0, 8).forEach(s => {
+                    const div = document.createElement('div');
+                    div.className = 'species-item';
+                    div.style.borderLeftColor = s.color;
+                    div.innerHTML = `
+                        <strong>${s.name}</strong> (${s.count})<br/>
+                        <span style="font-size:0.7rem; color:#aaa">${s.baseDNA.toString().substring(0, 30)}...</span>
+                    `;
+                    list.appendChild(div);
+                });
+            }
+        }
+
+        // --- START ---
+        const canvas = document.getElementById('simCanvas');
+        const sim = new Simulation(canvas);
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        sim.init();
+
+        function loop() {
+            if (sim.isRunning) {
+                for(let i=0; i<sim.speed; i++) sim.tick();
+                sim.updateUI();
+            }
+            sim.render();
+            requestAnimationFrame(loop);
+        }
+
+        document.getElementById('pauseBtn').onclick = (e) => {
+            sim.isRunning = !sim.isRunning;
+            e.target.textContent = sim.isRunning ? "Pause Simulation" : "Resume Simulation";
+        };
+        document.getElementById('resetBtn').onclick = () => sim.init();
+        document.getElementById('speedRange').oninput = (e) => sim.speed = parseInt(e.target.value);
+
+        loop();
+    </script>
+</body>
+</html>

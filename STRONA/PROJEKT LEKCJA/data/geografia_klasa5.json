@@ -1,0 +1,16 @@
+{
+  "Układ Słoneczny": [
+    {"question": "Która planeta jest najbliżej Słońca?", "options": ["Merkury", "Wenus", "Ziemia", "Mars"], "answer": "Merkury"},
+    {"question": "Największa planeta w naszym układzie to:", "options": ["Jowisz", "Saturn", "Neptun", "Uran"], "answer": "Jowisz"},
+    {"question": "Czerwona Planeta to przydomek:", "options": ["Marsa", "Wenus", "Merkurego", "Saturna"], "answer": "Marsa"},
+    {"question": "Ziemia krąży wokół:", "options": ["Słońca", "Księżyca", "Marsa", "Jowisza"], "answer": "Słońca"},
+    {"question": "Ile planet jest w Układzie Słonecznym?", "options": ["8", "9", "7", "10"], "answer": "8"}
+  ],
+  "Krajobrazy Polski": [
+    {"question": "Najwyższe góry w Polsce to:", "options": ["Tatry", "Beskidy", "Karkonosze", "Góry Świętokrzyskie"], "answer": "Tatry"},
+    {"question": "Gdzie leży Morze Bałtyckie?", "options": ["Na północy", "Na południu", "Na wschodzie", "Na zachodzie"], "answer": "Na północy"},
+    {"question": "Najdłuższa rzeka Polski to:", "options": ["Wisła", "Odra", "Warta", "Bug"], "answer": "Wisła"},
+    {"question": "Stolica Polski to:", "options": ["Warszawa", "Kraków", "Wrocław", "Poznań"], "answer": "Warszawa"},
+    {"question": "Polska graniczy od zachodu z:", "options": ["Niemcami", "Czechami", "Rosją", "Słowacją"], "answer": "Niemcami"}
+  ]
+}

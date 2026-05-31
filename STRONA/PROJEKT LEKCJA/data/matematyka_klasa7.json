@@ -1,0 +1,14 @@
+{
+  "Potęgi i pierwiastki": [
+    {"question": "Pierwiastek z 64 to:", "options": ["8", "7", "9", "6"], "answer": "8"}
+  ],
+  "Procenty w zadaniach": [
+    {"question": "Towar kosztował 100 zł, podrożał o 10%. Nowa cena to:", "options": ["110 zł", "101 zł", "120 zł", "100.10 zł"], "answer": "110 zł"}
+  ],
+  "Trójkąty": [
+    {"question": "Trójkąt o bokach 3, 4, 5 jest:", "options": ["Prostokątny", "Równoboczny", "Rozwartokątny", "Nie istnieje"], "answer": "Prostokątny"}
+  ],
+  "Układy równań": [
+    {"question": "Metoda podstawiania służy do rozwiązywania:", "options": ["Układów równań", "Potęg", "Pól", "Procentów"], "answer": "Układów równań"}
+  ]
+}

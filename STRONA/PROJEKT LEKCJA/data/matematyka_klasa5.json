@@ -1,0 +1,14 @@
+{
+  "Liczby naturalne i ułamki": [
+    {"question": "Która liczba jest większa?", "options": ["0.5", "0.05", "0.49", "0.1"], "answer": "0.5"}
+  ],
+  "Pola i obwody": [
+    {"question": "Pole prostokąta o bokach 4 i 6 wynosi:", "options": ["24", "20", "10", "46"], "answer": "24"}
+  ],
+  "Liczby całkowite": [
+    {"question": "-5 + 3 wynosi:", "options": ["-2", "2", "-8", "8"], "answer": "-2"}
+  ],
+  "Ułamki zwykłe": [
+    {"question": "Skróć ułamek 4/8:", "options": ["1/2", "1/4", "2/3", "4/1"], "answer": "1/2"}
+  ]
+}

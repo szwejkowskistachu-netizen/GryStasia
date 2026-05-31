@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shooter 3D - Jungle School</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+                "tween": "https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- Menu Początkowe -->
+    <div id="main-menu" class="screen">
+        <h1>SHOOTER 3D</h1>
+        <div id="character-preview"></div>
+        <div class="menu-buttons">
+            <button id="btn-play">GRAJ Z BOTAMI</button>
+            <button id="btn-skins">ZMIEŃ POSTAĆ</button>
+            <button id="btn-weapons">SKLEP BRONI</button>
+        </div>
+        <div class="stats-overview">
+            Monety: <span id="menu-coins">0</span>
+        </div>
+    </div>
+
+    <!-- Ekran Wyboru Postaci -->
+    <div id="skin-menu" class="screen hidden">
+        <button class="back-btn">POWRÓT</button>
+        <h2>WYBIERZ POSTAĆ</h2>
+        <div id="skins-list">
+            <!-- Skóry będą dodawane dynamicznie -->
+        </div>
+    </div>
+
+    <!-- Ekran Wyboru Mapy -->
+    <div id="map-menu" class="screen hidden">
+        <button class="back-btn">POWRÓT</button>
+        <h2>WYBIERZ MAPĘ</h2>
+        <div class="map-grid">
+            <div class="map-card" data-map="city">
+                <div class="map-placeholder city-bg"></div>
+                <h3>MIASTO</h3>
+            </div>
+            <div class="map-card" data-map="jungle">
+                <div class="map-placeholder jungle-bg"></div>
+                <h3>DŻUNGLA</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ekran Ładowania -->
+    <div id="loading-screen" class="screen hidden">
+        <h2>ŁADOWANIE...</h2>
+    </div>
+
+    <!-- Ekran Wyboru Broni -->
+    <div id="weapon-menu" class="screen hidden">
+        <button class="back-btn">POWRÓT</button>
+        <h2>SKLEP BRONI</h2>
+        <div id="weapons-list">
+            <!-- Bronie będą dodawane dynamicznie -->
+        </div>
+    </div>
+
+    <!-- HUD Gry -->
+    <div id="game-hud" class="hidden">
+        <div class="hud-top">
+            <div id="hp-display">HP: 100</div>
+            <div id="coins-display">Monety: 0</div>
+        </div>
+        <div id="weapon-info">Broń: Pistol</div>
+        <div id="crosshair"></div>
+    </div>
+
+    <canvas id="game-canvas"></canvas>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

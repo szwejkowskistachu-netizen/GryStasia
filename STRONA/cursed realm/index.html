@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursed Realm</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <header>
+            <div class="logo">
+                <span class="icon">💀</span> CURSED REALM
+            </div>
+            <div class="turn-info">
+                TURA <span id="turn-count">1</span> | <span id="attack-info">Następny atak za 4 tur</span>
+            </div>
+        </header>
+
+        <div class="resource-bar">
+            <div class="resource" title="Złoto">
+                <div class="res-icon gold">🟡</div>
+                <div class="res-value">
+                    <div id="gold">50</div>
+                    <div class="res-gain" id="gold-gain">+9/tura</div>
+                </div>
+            </div>
+            <div class="resource" title="Dusze">
+                <div class="res-icon souls">💀</div>
+                <div class="res-value">
+                    <div id="souls">20</div>
+                    <div class="res-gain" id="souls-gain">+5/tura</div>
+                </div>
+            </div>
+            <div class="resource" title="Kości">
+                <div class="res-icon bones">🦴</div>
+                <div class="res-value">
+                    <div id="bones">30</div>
+                    <div class="res-gain" id="bones-gain">+5/tura</div>
+                </div>
+            </div>
+            <div class="resource" title="Krew">
+                <div class="res-icon blood">🩸</div>
+                <div class="res-value">
+                    <div id="blood">15</div>
+                    <div class="res-gain" id="blood-gain">+3/tura</div>
+                </div>
+            </div>
+            <div class="fortress-status">
+                <div class="fortress-header">
+                    WAROWNIA — <span id="hp">100</span>/100 HP DEF: <span id="def">5</span>
+                </div>
+                <div class="hp-bar-container">
+                    <div id="hp-bar" style="width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <main>
+            <section class="left-panel">
+                <div class="section-title">BUDYNKI KRÓLESTWA</div>
+                <div class="buildings-grid">
+                    <div class="building-card" id="b-gold-mine">
+                        <div class="card-header">
+                            <span class="building-icon">⛏️</span>
+                            <span class="level">Poz. <span class="lvl">1</span></span>
+                        </div>
+                        <div class="building-name">Kopalnia Złota</div>
+                        <div class="building-desc">Wydobywa złoto i kości</div>
+                    </div>
+                    <div class="building-card" id="b-crypt">
+                        <div class="card-header">
+                            <span class="building-icon">🏛️</span>
+                            <span class="level">Poz. <span class="lvl">1</span></span>
+                        </div>
+                        <div class="building-name">Mroczna Krypta</div>
+                        <div class="building-desc">Generuje dusze</div>
+                    </div>
+                    <div class="building-card" id="b-altar">
+                        <div class="card-header">
+                            <span class="building-icon">🩸</span>
+                            <span class="level">Poz. <span class="lvl">1</span></span>
+                        </div>
+                        <div class="building-name">Ołtarz Krwi</div>
+                        <div class="building-desc">Produkuje krew</div>
+                    </div>
+                    <div class="building-card" id="b-tower">
+                        <div class="card-header">
+                            <span class="building-icon">🗼</span>
+                            <span class="level">Poz. <span class="lvl">1</span></span>
+                        </div>
+                        <div class="building-name">Wieża Śmierci</div>
+                        <div class="building-desc">+DEF, zadaje obrażenia atakującym</div>
+                    </div>
+                    <div class="building-card" id="b-forge">
+                        <div class="card-header">
+                            <span class="building-icon">🔥</span>
+                            <span class="level">Poz. <span class="lvl">1</span></span>
+                        </div>
+                        <div class="building-name">Kuźnia Klątw</div>
+                        <div class="building-desc">Wzmacnia jednostki</div>
+                    </div>
+                    <div class="building-card disabled" id="b-gate">
+                        <div class="card-header">
+                            <span class="building-icon">🚪</span>
+                            <span class="level">Poz. <span class="lvl">0</span></span>
+                        </div>
+                        <div class="building-name">Brama Piekieł</div>
+                        <div class="building-desc">Odblokuj: rekrut premium</div>
+                    </div>
+                </div>
+
+                <div class="section-title">ARMIA NIEUMARŁYCH — Moc: <span id="army-power">0</span></div>
+                <div id="army-list">
+                    Brak jednostek — zrekrutuj armię
+                </div>
+            </section>
+
+            <section class="right-panel">
+                <div class="section-title">AKCJE</div>
+                <button id="end-turn-btn" class="action-btn main-action">⚔️ ZAKOŃCZ TURĘ</button>
+
+                <div class="section-title">REKRUTACJA</div>
+                <div class="recruitment-list">
+                    <button class="recruit-btn" data-unit="skeleton">
+                        <span class="unit-icon">🦴</span> Szkielet
+                        <span class="cost">15🦴 10💀</span>
+                    </button>
+                    <button class="recruit-btn" data-unit="zombie">
+                        <span class="unit-icon">🧟</span> Zombie
+                        <span class="cost">20💀 15🟡</span>
+                    </button>
+                    <button class="recruit-btn" data-unit="lich">
+                        <span class="unit-icon">💀</span> Lich
+                        <span class="cost">40💀 30🟡 10🩸</span>
+                    </button>
+                    <button class="recruit-btn" data-unit="wraith">
+                        <span class="unit-icon">👻</span> Upiór
+                        <span class="cost">30💀 25🟡 20🦴</span>
+                    </button>
+                </div>
+
+                <div class="section-title">ULEPSZENIA</div>
+                <div class="upgrades-list">
+                    <button class="upgrade-btn" data-building="gold-mine">
+                        ⬆️ Ulepsz Kopalnię
+                        <span class="cost">40🟡 20🦴</span>
+                    </button>
+                    <button class="upgrade-btn" data-building="crypt">
+                        ⬆️ Ulepsz Kryptę
+                        <span class="cost">35💀 25🟡</span>
+                    </button>
+                    <button class="upgrade-btn" data-building="altar">
+                        ⬆️ Ulepsz Ołtarz
+                        <span class="cost">20🩸 20💀</span>
+                    </button>
+                    <button class="upgrade-btn" data-building="tower">
+                        ⬆️ Ulepsz Wieżę
+                        <span class="cost">50🟡 30🦴</span>
+                    </button>
+                    <button class="upgrade-btn" data-building="forge">
+                        ⬆️ Ulepsz Kuźnię
+                        <span class="cost">60🟡 15🩸</span>
+                    </button>
+                    <button class="upgrade-btn" data-building="gate">
+                        🚪 Odblokuj Bramę Piekieł
+                        <span class="cost">100💀 50🩸 100🟡</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <div id="event-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="event-title">Zdarzenie!</h2>
+                <p id="event-desc">Coś się wydarzyło w twoim królestwie...</p>
+                <button id="event-close">Kontynuuj</button>
+            </div>
+        </div>
+
+        <div id="game-over-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>KONIEC GRY</h2>
+                <p id="game-over-msg">Twoje królestwo upadło.</p>
+                <button onclick="location.reload()">Zagraj ponownie</button>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

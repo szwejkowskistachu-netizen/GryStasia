@@ -1,0 +1,85 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a1a;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#gameCanvas {
+    background-color: #000;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    image-rendering: pixelated;
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#controls, #stats-panel {
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+#controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+button {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #666;
+}
+
+button.active {
+    background: #007bff;
+}
+
+#stats-panel {
+    width: 250px;
+}
+
+.faction-stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.faction-color-box {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin-right: 5px;
+}

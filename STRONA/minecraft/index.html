@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Clone</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="instructions">
+        <h1>Click to Play</h1>
+        <p>(W, A, S, D) to move, (SPACE) to jump, (MOUSE) to look around, (LEFT CLICK) to break, (RIGHT CLICK) to place</p>
+    </div>
+    <div id="crosshair"></div>
+    <div id="inventory">
+        <div class="slot selected" data-type="grass">G</div>
+        <div class="slot" data-type="dirt">D</div>
+        <div class="slot" data-type="stone">S</div>
+        <div class="slot" data-type="wood">W</div>
+        <div class="slot" data-type="leaves">L</div>
+    </div>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>

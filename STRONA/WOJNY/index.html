@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI War Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-overlay">
+            <div id="controls">
+                <button id="startBtn">Start</button>
+                <button id="pauseBtn">Pause</button>
+                <div class="speed-control">
+                    Speed: 
+                    <button class="speedBtn" data-speed="1">1x</button>
+                    <button class="speedBtn" data-speed="2">2x</button>
+                    <button class="speedBtn" data-speed="5">5x</button>
+                    <button class="speedBtn" data-speed="10">10x</button>
+                </div>
+            </div>
+            <div id="stats-panel">
+                <h3>Battle Stats</h3>
+                <div id="faction-stats"></div>
+            </div>
+        </div>
+    </div>
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/unit.js"></script>
+    <script src="js/faction.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

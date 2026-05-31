@@ -1,0 +1,14 @@
+{
+  "Polska Piastów": [
+    {"question": "Kto był pierwszym królem Polski?", "options": ["Bolesław Chrobry", "Mieszko I", "Kazimierz Wielki", "Władysław Łokietek"], "answer": "Bolesław Chrobry"}
+  ],
+  "Chrzest Polski": [
+    {"question": "W którym roku był Chrzest Polski?", "options": ["966", "1000", "997", "1025"], "answer": "966"}
+  ],
+  "Rycerstwo": [
+    {"question": "Miejsce zamieszkania rycerza to:", "options": ["Zamek", "Pałac", "Dwór", "Chatka"], "answer": "Zamek"}
+  ],
+  "Wielkie odkrycia": [
+    {"question": "Kto odkrył Amerykę w 1492 roku?", "options": ["Krzysztof Kolumb", "Vasco da Gama", "Magellan", "Amerigo Vespucci"], "answer": "Krzysztof Kolumb"}
+  ]
+}

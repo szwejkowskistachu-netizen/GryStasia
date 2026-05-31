@@ -1,0 +1,14 @@
+{
+  "Morfologia": [
+    {"question": "Wyraz 'domy' jest w liczbie:", "options": ["Mnogiej", "Pojedynczej", "Podwójnej", "Nieokreślonej"], "answer": "Mnogiej"}
+  ],
+  "Ortografia": [
+    {"question": "Jak napiszemy: g_żyna?", "options": ["Grażyna", "Grzeżyna", "Graźyna", "Grarzyna"], "answer": "Grażyna"}
+  ],
+  "Składnia": [
+    {"question": "Podmiot odpowiada na pytania:", "options": ["Kto? Co?", "Kogo? Czego?", "Komu? Czemu?", "Z kim? Z czym?"], "answer": "Kto? Co?"}
+  ],
+  "Mitologia": [
+    {"question": "Bóg piorunów w mitologii greckiej to:", "options": ["Zeus", "Hades", "Posejdon", "Ares"], "answer": "Zeus"}
+  ]
+}

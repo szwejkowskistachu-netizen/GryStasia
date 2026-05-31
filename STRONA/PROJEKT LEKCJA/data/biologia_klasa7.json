@@ -1,0 +1,14 @@
+{
+  "Ciało człowieka": [
+    {"question": "Ile zębów ma dorosły człowiek?", "options": ["32", "28", "30", "36"], "answer": "32"}
+  ],
+  "Układ pokarmowy": [
+    {"question": "Gdzie zaczyna się trawienie?", "options": ["W jamie ustnej", "W żołądku", "W jelicie cienkim", "W przełyku"], "answer": "W jamie ustnej"}
+  ],
+  "Układ krwionośny": [
+    {"question": "Krew z serca płynie:", "options": ["Tętnicami", "Żyłami", "Naczyniami włosowatymi", "Aortą"], "answer": "Tętnicami"}
+  ],
+  "Zdrowy styl życia": [
+    {"question": "Która witamina powstaje pod wpływem słońca?", "options": ["D", "C", "A", "B12"], "answer": "D"}
+  ]
+}

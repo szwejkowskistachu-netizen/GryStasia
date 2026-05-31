@@ -1,0 +1,199 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #111;
+    color: white;
+}
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    font-size: 4rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+.menu-buttons {
+    display: flex;
+    gap: 20px;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    background: #444;
+    color: white;
+    border: 2px solid #666;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #666;
+    border-color: #fff;
+}
+
+#character-preview {
+    width: 200px;
+    height: 300px;
+    background: #222;
+    margin-bottom: 2rem;
+    border: 1px solid #444;
+}
+
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+/* Wybór Postaci */
+#skins-list {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+}
+
+.skin-card {
+    width: 150px;
+    background: #333;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.skin-card.selected {
+    border-color: #00ff00;
+}
+
+.skin-card img {
+    width: 100%;
+    height: 120px;
+    background: #111;
+    margin-bottom: 10px;
+}
+
+/* Wybór Mapy */
+.map-grid {
+    display: flex;
+    gap: 30px;
+}
+
+.map-card {
+    width: 200px;
+    background: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.map-card:hover {
+    transform: scale(1.05);
+    background: #444;
+}
+
+.map-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.map-card h3 {
+    padding: 10px;
+    margin: 0;
+    text-align: center;
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 150px;
+}
+.city-bg {
+    background: #555;
+    background-image: linear-gradient(to right, #666 2px, transparent 2px), linear-gradient(to bottom, #666 2px, transparent 2px);
+    background-size: 20px 20px;
+}
+.jungle-bg {
+    background: #1a4d1a;
+    background-image: radial-gradient(#2d732d 20%, transparent 20%);
+    background-size: 30px 30px;
+}
+
+/* HUD */
+#game-hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 5;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+#hp-display {
+    color: #ff4444;
+}
+
+#coins-display {
+    color: #ffd700;
+}
+
+#weapon-info {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-size: 1.2rem;
+}
+
+#crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #00ff00;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#game-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}

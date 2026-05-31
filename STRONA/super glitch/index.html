@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glitch World</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="start-screen">
+            <h1 class="glitch-text">GLITCH WORLD</h1>
+            <p>The city is collapsing...</p>
+            <button id="start-btn">ENTER THE GLITCH</button>
+        </div>
+        <div id="ui" class="hidden">
+            <div id="stability-bar-container">
+                <div id="stability-label">World Stability: <span id="stability-value">100</span>%</div>
+                <div id="stability-bar-bg">
+                    <div id="stability-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div id="game-over" class="hidden">
+            <h1 class="glitch-text">WORLD COLLAPSED</h1>
+            <p>You became part of the static.</p>
+            <button id="restart-btn">Re-materialize</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

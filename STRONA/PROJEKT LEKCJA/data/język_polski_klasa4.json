@@ -1,0 +1,21 @@
+{
+  "Gramatyka": [
+    {"question": "Które słowo to czasownik?", "options": ["Biegać", "Dom", "Niebieski", "Szybko"], "answer": "Biegać"},
+    {"question": "Liczba mnoga od słowa 'zeszyt' to:", "options": ["Zeszyty", "Zeszycie", "Zeszytów", "Zeszytami"], "answer": "Zeszyty"}
+  ],
+  "Ortografia": [
+    {"question": "Jak napiszemy: rz_ka?", "options": ["Rzeka", "Rzaka", "Rzeka", "Żeka"], "answer": "Rzeka"},
+    {"question": "Pisownia 'nie' z czasownikami jest zazwyczaj:", "options": ["Rozdzielna", "Łączna", "Z myślnikiem", "Zależy od przypadku"], "answer": "Rozdzielna"}
+  ],
+  "Literatura": [
+    {"question": "Kto napisał 'Akademię Pana Kleksa'?", "options": ["Jan Brzechwa", "Julian Tuwim", "Henryk Sienkiewicz", "Adam Mickiewicz"], "answer": "Jan Brzechwa"},
+    {"question": "Główny bohater 'Akademii Pana Kleksa' to:", "options": ["Adaś Niezgódka", "Marek", "Kacper", "Janek"], "answer": "Adaś Niezgódka"}
+  ],
+  "Części mowy": [
+    {"question": "Pytania 'kto? co?' odpowiadają:", "options": ["Rzeczownikowi", "Czasownikowi", "Przymiotnikowi", "Przysłówkowi"], "answer": "Rzeczownikowi"},
+    {"question": "Przymiotnik określa:", "options": ["Cechy przedmiotów", "Czynności", "Liczbę", "Sposób wykonania"], "answer": "Cechy przedmiotów"}
+  ],
+  "Interpunkcja": [
+    {"question": "Co stawiamy na końcu zdania pytającego?", "options": ["?", "!", ".", ";"], "answer": "?"}
+  ]
+}

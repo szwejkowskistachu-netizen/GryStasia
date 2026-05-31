@@ -1,0 +1,17 @@
+{
+  "Liczby wymierne": [
+    {"question": "Wartość bezwzględna z -7 wynosi:", "options": ["7", "-7", "0", "1/7"], "answer": "7"}
+  ],
+  "Wyrażenia algebraiczne": [
+    {"question": "2x + 3x to:", "options": ["5x", "6x", "5", "x5"], "answer": "5x"}
+  ],
+  "Równania": [
+    {"question": "Jeśli x + 2 = 5, to x wynosi:", "options": ["3", "7", "2", "5"], "answer": "3"}
+  ],
+  "Potęgi": [
+    {"question": "2 do potęgi 3 to:", "options": ["8", "6", "4", "16"], "answer": "8"}
+  ],
+  "Procenty": [
+    {"question": "50% z liczby 40 to:", "options": ["20", "10", "30", "40"], "answer": "20"}
+  ]
+}

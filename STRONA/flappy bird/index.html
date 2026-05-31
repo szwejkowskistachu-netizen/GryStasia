@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon's Ascent - Dark Fantasy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="background"></div>
+        <div id="dragon"></div>
+        <div id="score-display">
+            Score: <span id="current-score">0</span> | 
+            Coins: <span id="total-coins">0</span>
+        </div>
+        <div id="game-over" class="hidden">
+            <h1>DEATH EMBRACES YOU</h1>
+            <p>Score: <span id="final-score">0</span></p>
+            <p>Coins Earned: <span id="coins-earned">0</span></p>
+            <div class="menu-btns">
+                <button id="restart-btn">RESURRECT</button>
+                <button id="shop-btn">VISIT CRYPT (SHOP)</button>
+            </div>
+        </div>
+        <div id="shop-screen" class="hidden">
+            <h1>THE DARK CRYPT</h1>
+            <p>Souls Collected: <span id="shop-coins">0</span></p>
+            <div class="shop-grid">
+                <div class="shop-item">
+                    <h3>Wings of Ether</h3>
+                    <p>Reduced Gravity</p>
+                    <button id="buy-gravity" class="buy-btn">50 Souls</button>
+                </div>
+                <div class="shop-item">
+                    <h3>Infernal Heart</h3>
+                    <p>Powerful Jump</p>
+                    <button id="buy-jump" class="buy-btn">50 Souls</button>
+                </div>
+                <div class="shop-item">
+                    <h3>Shadow Skin</h3>
+                    <p>Purple Glow</p>
+                    <button id="buy-skin-shadow" class="buy-btn">100 Souls</button>
+                </div>
+                <div class="shop-item">
+                    <h3>Golden Terror</h3>
+                    <p>Pure Wealth</p>
+                    <button id="buy-skin-gold" class="buy-btn">250 Souls</button>
+                </div>
+            </div>
+            <button id="close-shop-btn">RETURN</button>
+        </div>
+        <div id="start-screen">
+            <h1>DRAGON'S ASCENT</h1>
+            <p>Click or Space to Fly</p>
+            <div class="menu-btns">
+                <button id="start-btn">BEGIN JOURNEY</button>
+                <button id="start-shop-btn">CRYPTS</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

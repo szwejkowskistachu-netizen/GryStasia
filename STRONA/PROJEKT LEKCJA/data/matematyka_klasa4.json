@@ -1,0 +1,19 @@
+{
+  "Liczby i działania": [
+    {"question": "Ile to jest 120 + 80?", "options": ["200", "180", "220", "210"], "answer": "200"},
+    {"question": "Wynik mnożenia 9 * 6 to:", "options": ["54", "56", "48", "63"], "answer": "54"}
+  ],
+  "Systemy zapisywania liczb": [
+    {"question": "Liczba rzymska XV to:", "options": ["15", "10", "5", "20"], "answer": "15"},
+    {"question": "Liczba 25 w systemie rzymskim to:", "options": ["XXV", "XVV", "XX", "XXX"], "answer": "XXV"}
+  ],
+  "Działania pisemne": [
+    {"question": "Dodawanie pisemne 123 + 456 daje:", "options": ["579", "589", "569", "479"], "answer": "579"}
+  ],
+  "Geometria": [
+    {"question": "Odcinki prostopadłe przecinają się pod kątem:", "options": ["90 stopni", "180 stopni", "45 stopni", "0 stopni"], "answer": "90 stopni"}
+  ],
+  "Ułamki zwykłe": [
+    {"question": "Pół to inaczej:", "options": ["1/2", "1/4", "1/3", "1/1"], "answer": "1/2"}
+  ]
+}

@@ -130,17 +130,13 @@ function deleteProject(index) {
 }
 
 function openGame(url) {
-    // Prevent double scrollbars and scrolling background
     document.body.style.overflow = 'hidden';
-    
-    // Clear and set src to reload the game properly
     gameFrame.src = "about:blank";
     
     setTimeout(() => {
         gameFrame.src = url;
         gameModal.style.display = 'block';
         
-        // Wait for iframe to load, then inject responsive CSS for PERFECT FIT
         gameFrame.onload = () => {
             try {
                 const style = document.createElement('style');
@@ -148,26 +144,29 @@ function openGame(url) {
                     body, html { 
                         margin: 0; 
                         padding: 0; 
-                        overflow: hidden; 
-                        width: 100vw; 
-                        height: 100vh; 
-                        display: flex; 
-                        justify-content: center; 
-                        align-items: center; 
+                        overflow: auto !important; 
+                        width: 100%; 
+                        height: 100%; 
+                        display: block;
                         background: #000; 
                     }
                     canvas { 
-                        max-width: 100% !important; 
-                        max-height: 100% !important; 
-                        width: auto !important; 
-                        height: auto !important; 
-                        object-fit: contain !important; 
                         display: block;
+                        max-width: 100% !important;
+                        height: auto !important;
+                        margin: 0 auto;
+                    }
+                    /* Specific fix for games with UI containers */
+                    #game-wrapper, #screens, .screen {
+                        min-height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
                     }
                 `;
                 gameFrame.contentDocument.head.appendChild(style);
             } catch (e) {
-                console.log("Cross-origin game detected, standard CSS scaling applied via style.css");
+                console.log("Cross-origin or error injecting CSS");
             }
         };
     }, 10);
@@ -178,72 +177,6 @@ function closeGame() {
     gameFrame.src = '';
     document.body.style.overflow = 'auto';
 }
-
-// Drag/Pan functionality for the game frame via Handles
-let isDragging = false;
-let activeHandle = null;
-let startX, startY;
-let scrollLeft, scrollTop;
-
-const startDragging = (e, handleType) => {
-    isDragging = true;
-    activeHandle = handleType;
-    
-    const handleEl = document.getElementById(`pan-handle-${handleType}`);
-    if (handleEl) handleEl.classList.add('active');
-    
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    
-    startX = clientX;
-    startY = clientY;
-    
-    const content = document.querySelector('.modal-content');
-    scrollLeft = content.scrollLeft;
-    scrollTop = content.scrollTop;
-};
-
-const stopDragging = () => {
-    isDragging = false;
-    document.querySelectorAll('.pan-handle').forEach(h => h.classList.remove('active'));
-    activeHandle = null;
-};
-
-const move = (e) => {
-    if (!isDragging) return;
-    
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    
-    const dx = clientX - startX;
-    const dy = clientY - startY;
-    
-    const content = document.querySelector('.modal-content');
-    
-    if (activeHandle === 'right') {
-        content.scrollLeft = scrollLeft - dx;
-    } else if (activeHandle === 'bottom') {
-        content.scrollTop = scrollTop - dy;
-    }
-};
-
-// Event Listeners for Handles
-const handleRight = document.getElementById('pan-handle-right');
-const handleBottom = document.getElementById('pan-handle-bottom');
-
-if (handleRight) {
-    handleRight.addEventListener('mousedown', (e) => startDragging(e, 'right'));
-    handleRight.addEventListener('touchstart', (e) => startDragging(e, 'right'), { passive: true });
-}
-if (handleBottom) {
-    handleBottom.addEventListener('mousedown', (e) => startDragging(e, 'bottom'));
-    handleBottom.addEventListener('touchstart', (e) => startDragging(e, 'bottom'), { passive: true });
-}
-
-window.addEventListener('mouseup', stopDragging);
-window.addEventListener('touchend', stopDragging);
-window.addEventListener('mousemove', move);
-window.addEventListener('touchmove', move, { passive: true });
 
 // Zamknij modal po kliknięciu poza zawartość
 window.onclick = function(event) {
@@ -357,7 +290,7 @@ if (projectForm) {
     });
 }
 
-// Automatyczna aktualizacja listy, jeśli dodano nowe domyślne projekty w kodzie
+// Automatyczna aktualizacja listy
 const storedProjects = JSON.parse(localStorage.getItem('myAIProjects'));
 if (storedProjects) {
     let updated = false;
@@ -374,5 +307,4 @@ if (storedProjects) {
     saveToLocalStorage();
 }
 
-// Initial UI Setup
 updateUI();

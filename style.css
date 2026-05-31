@@ -259,6 +259,20 @@ footer {
 #game-frame {
     width: 100%;
     height: 100%;
+    display: block;
+}
+
+/* Ensure all games in iframes behave well */
+#game-modal iframe {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Base styles for all game pages to be responsive */
+canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain;
 }
 
 /* Responsive */

@@ -25,12 +25,6 @@ const defaultProjects = [
         url: "geny/index.html"
     },
     {
-        name: "Snake Jungle",
-        description: "Klasyczny wąż w dżungli.",
-        status: "gotowe",
-        url: "snake-jungle/index.html"
-    },
-    {
         name: "Wojny AI",
         description: "Wielkie bitwy sztucznej inteligencji.",
         status: "gotowe",
@@ -53,12 +47,6 @@ const defaultProjects = [
         description: "Zaawansowany system wykrywania prawdy.",
         status: "gotowe",
         url: "WYKRYWACZ KLAMSTW/index.html"
-    },
-    {
-        name: "Labirynt",
-        description: "Znajdź wyjście z trudnego labiryntu.",
-        status: "gotowe",
-        url: "labirynt/index.html"
     },
     {
         name: "Horror",
@@ -86,6 +74,7 @@ const defaultProjects = [
 
 // State Management
 let projects = JSON.parse(localStorage.getItem('myAIProjects')) || [...defaultProjects];
+let isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
 // DOM Elements
 const projectsContainer = document.getElementById('projects-container');
@@ -94,7 +83,10 @@ const gameModal = document.getElementById('game-modal');
 const gameFrame = document.getElementById('game-frame');
 const resetBtn = document.getElementById('reset-projects');
 const adminLogin = document.getElementById('admin-login');
+const btnCreatePlan = document.getElementById('btn-create-plan');
 const addProjectSection = document.getElementById('add-project');
+const planSection = document.getElementById('creator-plan-section');
+const loginStatusBar = document.getElementById('login-status-bar');
 
 // Functions
 function saveToLocalStorage() {
@@ -120,6 +112,10 @@ function getStatusClass(status) {
 }
 
 function deleteProject(index) {
+    if (!isAdmin) {
+        alert('Tylko Twórca może usuwać projekty.');
+        return;
+    }
     if (confirm('Czy na pewno chcesz usunąć ten projekt?')) {
         projects.splice(index, 1);
         saveToLocalStorage();
@@ -159,10 +155,12 @@ function renderProjects() {
             actionButton = `<button onclick="openGame('${project.url}')">Graj / Zobacz</button>`;
         }
         
+        let deleteBtn = isAdmin ? `<button onclick="deleteProject(${index})" style="border: none; background: transparent; color: #ef4444; font-size: 1.2rem; cursor: pointer; padding: 0 5px;">&times;</button>` : '';
+
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start;">
                 <h3>${project.name}</h3>
-                <button onclick="deleteProject(${index})" style="border: none; background: transparent; color: #ef4444; font-size: 1.2rem; cursor: pointer; padding: 0 5px;">&times;</button>
+                ${deleteBtn}
             </div>
             <span class="project-status ${getStatusClass(project.status)}">${getStatusLabel(project.status)}</span>
             <p>${project.description}</p>
@@ -173,23 +171,54 @@ function renderProjects() {
     });
 }
 
-// Event Listeners
-if (adminLogin) {
-    adminLogin.addEventListener('click', () => {
-        const password = prompt('Podaj hasło Twórcy:');
-        if (password === 'admin') {
-            addProjectSection.style.display = 'block';
+function updateUI() {
+    if (isAdmin) {
+        if (addProjectSection) addProjectSection.style.display = 'block';
+        if (planSection) planSection.style.display = 'none';
+        if (loginStatusBar) loginStatusBar.style.display = 'block';
+        if (adminLogin) {
             adminLogin.style.color = '#4ade80';
             adminLogin.innerText = 'Panel Aktywny';
-            alert('Witaj Twórco! Formularz dodawania jest teraz widoczny.');
-        } else {
-            alert('Błędne hasło. Tylko Twórca może dodawać projekty.');
         }
-    });
+    } else {
+        if (addProjectSection) addProjectSection.style.display = 'none';
+        if (planSection) planSection.style.display = 'block';
+        if (loginStatusBar) loginStatusBar.style.display = 'none';
+        if (adminLogin) {
+            adminLogin.style.color = '';
+            adminLogin.innerText = 'Panel Twórcy';
+        }
+    }
+    renderProjects();
+}
+
+function handleLogin() {
+    const password = prompt('Podaj hasło Twórcy:');
+    if (password === 'Stasiu2015!') {
+        isAdmin = true;
+        sessionStorage.setItem('isAdmin', 'true');
+        alert('Witaj Stasiu! Możesz teraz dodawać nowe projekty.');
+        updateUI();
+    } else {
+        alert('Błędne hasło. Tylko Twórca może zarządzać projektami.');
+    }
+}
+
+// Event Listeners
+if (btnCreatePlan) {
+    btnCreatePlan.addEventListener('click', handleLogin);
+}
+
+if (adminLogin) {
+    adminLogin.addEventListener('click', handleLogin);
 }
 
 if (resetBtn) {
     resetBtn.addEventListener('click', () => {
+        if (!isAdmin) {
+            alert('Tylko Twórca może resetować listę.');
+            return;
+        }
         if (confirm('Czy na pewno chcesz zresetować listę projektów do domyślnych gier? Twoje dodane projekty znikną.')) {
             projects = [...defaultProjects];
             saveToLocalStorage();
@@ -214,15 +243,13 @@ if (projectForm) {
         renderProjects();
         
         projectForm.reset();
+        alert('Projekt dodany pomyślnie!');
     });
 }
 
-// Initial Render
-renderProjects();
-
-// Automatyczna aktualizacja listy, jeśli dodano nowe domyślne projekty
-if (localStorage.getItem('myAIProjects')) {
-    const storedProjects = JSON.parse(localStorage.getItem('myAIProjects'));
+// Automatyczna aktualizacja listy, jeśli dodano nowe domyślne projekty w kodzie
+const storedProjects = JSON.parse(localStorage.getItem('myAIProjects'));
+if (storedProjects) {
     let updated = false;
     defaultProjects.forEach(defProj => {
         if (!storedProjects.some(p => p.name === defProj.name)) {
@@ -232,8 +259,10 @@ if (localStorage.getItem('myAIProjects')) {
     });
     if (updated) {
         saveToLocalStorage();
-        renderProjects();
     }
 } else {
     saveToLocalStorage();
 }
+
+// Initial UI Setup
+updateUI();

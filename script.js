@@ -162,6 +162,62 @@ function closeGame() {
     document.body.style.overflow = 'auto';
 }
 
+// Drag/Pan functionality for the game frame
+let isDragging = false;
+let startX, startY;
+let scrollLeft, scrollTop;
+
+const startDragging = (e) => {
+    isDragging = true;
+    
+    // Handle touch or mouse
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    startX = clientX;
+    startY = clientY;
+    
+    const content = document.querySelector('.modal-content');
+    scrollLeft = content.scrollLeft;
+    scrollTop = content.scrollTop;
+    content.style.cursor = 'grabbing';
+};
+
+const stopDragging = () => {
+    isDragging = false;
+    const content = document.querySelector('.modal-content');
+    if (content) content.style.cursor = 'grab';
+};
+
+const move = (e) => {
+    if (!isDragging) return;
+    
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+    
+    const content = document.querySelector('.modal-content');
+    content.scrollLeft = scrollLeft - dx;
+    content.scrollTop = scrollTop - dy;
+};
+
+// Modal interaction for panning
+const modalContent = document.querySelector('.modal-content');
+if (modalContent) {
+    modalContent.style.cursor = 'grab';
+    modalContent.style.overflow = 'auto'; 
+    
+    modalContent.addEventListener('mousedown', startDragging);
+    window.addEventListener('mouseup', stopDragging);
+    window.addEventListener('mousemove', move);
+    
+    modalContent.addEventListener('touchstart', startDragging, { passive: true });
+    window.addEventListener('touchend', stopDragging);
+    window.addEventListener('touchmove', move, { passive: true });
+}
+
 // Zamknij modal po kliknięciu poza zawartość
 window.onclick = function(event) {
     if (event.target == gameModal) {

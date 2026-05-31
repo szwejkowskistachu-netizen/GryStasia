@@ -311,15 +311,22 @@ function showScreen(screenId) {
         renderRanking();
     } else if (screenId === 'game') {
         // Music continues playing everywhere as requested
-        if (!window.game) {
-            const gameConfig = { ...config };
-            gameConfig.callbacks = {
-                postBoot: (game) => {
-                    game.scene.start('GameScene', { level: gameState.currentLevel });
-                }
-            };
-            window.game = new Phaser.Game(gameConfig);
+        if (window.game) {
+            window.game.destroy(true);
+            window.game = null;
         }
+        
+        const gameConfig = { ...config };
+        
+        // Ensure standard type for better compatibility
+        gameConfig.type = Phaser.AUTO;
+        
+        gameConfig.callbacks = {
+            postBoot: (game) => {
+                game.scene.start('GameScene', { level: gameState.currentLevel });
+            }
+        };
+        window.game = new Phaser.Game(gameConfig);
     }
 }
 

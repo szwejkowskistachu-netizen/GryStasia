@@ -144,24 +144,32 @@ function openGame(url) {
                     body, html { 
                         margin: 0; 
                         padding: 0; 
-                        overflow: auto !important; 
-                        width: 100%; 
-                        height: 100%; 
-                        display: block;
-                        background: #000; 
+                        overflow: hidden !important; 
+                        width: 100vw !important; 
+                        height: 100vh !important; 
+                        display: flex !important; 
+                        justify-content: center !important; 
+                        align-items: center !important; 
+                        background: #000 !important; 
                     }
                     canvas { 
-                        display: block;
-                        max-width: 100% !important;
+                        display: block !important;
+                        max-width: 100vw !important;
+                        max-height: 100vh !important;
+                        width: auto !important;
                         height: auto !important;
-                        margin: 0 auto;
+                        object-fit: contain !important;
                     }
-                    /* Specific fix for games with UI containers */
-                    #game-wrapper, #screens, .screen {
-                        min-height: 100vh;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
+                    #game-wrapper, #screens, .screen, #game-container {
+                        width: 100vw !important;
+                        height: 100vh !important;
+                        max-width: 100vw !important;
+                        max-height: 100vh !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        display: flex !important;
+                        justify-content: center !important;
+                        align-items: center !important;
                     }
                 `;
                 gameFrame.contentDocument.head.appendChild(style);

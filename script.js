@@ -61,6 +61,12 @@ const defaultProjects = [
         url: "super rpg/index.html"
     },
     {
+        name: "Geometry Dash",
+        description: "Dynamiczna gra rytmiczna.",
+        status: "gotowe",
+        url: "geometry dash/index.html"
+    },
+    {
         name: "Taktyczna wojna AI",
         description: "AI walczą same, ustawiasz strategie i obserwujesz wyniki.",
         status: "plan"

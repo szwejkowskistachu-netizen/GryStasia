@@ -1,0 +1,253 @@
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    background-color: #000;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #2c3e50, #000);
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    touch-action: manipulation;
+}
+
+#screens {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    transition: opacity 0.5s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    gap: 15px;
+    overflow: hidden; /* Prevent scrolling on the whole screen */
+}
+
+/* On larger screens, keep menus contained */
+@media screen and (min-width: 850px) and (min-height: 650px) {
+    #start-screen, #shop-screen, #ranking-screen, #name-entry-screen {
+        width: 800px;
+        height: 600px;
+        border: 4px solid #f1c40f;
+        border-radius: 15px;
+        position: relative;
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+#menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 18px;
+    background: linear-gradient(to bottom, #f1c40f, #f39c12);
+    border: 2px solid #d35400;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-weight: bold;
+    width: 220px;
+    color: #000;
+    box-shadow: 0 4px 0 #d35400, 0 8px 15px rgba(0,0,0,0.3);
+}
+
+button:hover {
+    background: linear-gradient(to bottom, #f39c12, #e67e22);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #d35400, 0 10px 20px rgba(0,0,0,0.4);
+}
+
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #d35400, 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.monkey-placeholder {
+    font-size: 80px;
+    line-height: 1;
+}
+
+#game-screen {
+    padding: 10px;
+    border: none;
+    background: #000;
+}
+
+#game-container {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    border: 4px solid #f1c40f;
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(241, 196, 15, 0.6);
+    overflow: hidden;
+    display: flex;
+}
+
+canvas {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Scrollable lists without visible scrollbars */
+#shop-items-container, #scores-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    max-height: 50vh;
+    overflow-y: auto;
+    width: 100%;
+    padding: 5px;
+    -webkit-overflow-scrolling: touch;
+}
+
+#shop-items-container::-webkit-scrollbar, 
+#scores-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+#shop-items-container::-webkit-scrollbar-thumb, 
+#scores-list::-webkit-scrollbar-thumb {
+    background: #f1c40f;
+    border-radius: 4px;
+}
+
+.skin-item {
+    padding: 10px;
+    border: 2px solid #f1c40f;
+    background: #34495e;
+    width: 95%;
+    max-width: 450px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.skin-preview-canvas {
+    width: 48px;
+    height: 72px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.skin-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+}
+
+.skin-name-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.skin-name {
+    font-weight: bold;
+    color: #f1c40f;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+#username-input {
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: 2px solid #f1c40f;
+    background: #34495e;
+    color: white;
+    text-align: center;
+    width: 90%;
+    max-width: 300px;
+}
+
+#final-score-display {
+    font-size: 18px;
+    color: #f1c40f;
+    font-weight: bold;
+    text-align: center;
+}
+
+#instructions-container {
+    width: 100%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 5px;
+    text-align: center;
+    font-size: 12px;
+    border: 1px solid rgba(241, 196, 15, 0.2);
+}
+
+#instructions-container h3 {
+    margin: 0 0 5px 0;
+    color: #f1c40f;
+    font-size: 14px;
+}
+
+#instructions-container p {
+    margin: 2px 0;
+    color: #bdc3c7;
+}
+
+#instructions-container strong {
+    color: #fff;
+}
+
+/* Landscape optimization */
+@media screen and (max-height: 450px) {
+    .screen { gap: 8px; padding: 10px; }
+    h1 { font-size: 18px; margin: 2px; }
+    .monkey-placeholder { font-size: 40px; }
+    #menu-buttons { 
+        flex-direction: row; /* Horizontal in landscape to save height */
+        gap: 10px; 
+    }
+    button { padding: 6px 12px; font-size: 14px; width: 140px; }
+    #instructions-container { font-size: 10px; padding: 5px; margin-top: 0; }
+    #instructions-container h3 { font-size: 12px; }
+}

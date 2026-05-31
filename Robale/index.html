@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robale - Arena Przetrwania</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-blob blob1"></div>
+    <div class="bg-blob blob2"></div>
+
+    <div id="menu-container">
+        <h1>Robale</h1>
+        <button id="main-play-btn" onclick="document.getElementById('menu-container').classList.add('hidden'); document.getElementById('difficulty-menu').classList.remove('hidden');">Graj Teraz</button>
+        <button id="skin-btn">Sklep ze Skórkami</button>
+        <button id="mission-btn">Misje</button>
+        <button id="rebirth-btn">Prestiż: <span id="rebirth-count">0/2</span></button>
+    </div>
+
+    <div id="difficulty-menu" class="hidden">
+        <h2>Wybierz Poziom Trudności</h2>
+        <button class="diff-btn" data-diff="easy" onclick="selectDifficulty('easy')">Łatwy (Głupie boty, mało DMG)</button>
+        <button class="diff-btn" data-diff="medium" onclick="selectDifficulty('medium')">Średni (Zbalansowany)</button>
+        <button class="diff-btn" data-diff="hard" onclick="selectDifficulty('hard')">Trudny (Mega Trudny!)</button>
+        <button id="diff-back-btn" onclick="document.getElementById('difficulty-menu').classList.add('hidden'); document.getElementById('menu-container').classList.remove('hidden');">Powrót</button>
+    </div>
+
+    <div id="matchmaking-menu" class="hidden">
+        <h2>Szukanie Graczy...</h2>
+        <div class="loader"></div>
+        <p>Pozostało: <span id="lobby-timer">10</span>s</p>
+        <p>Gracze w lobby: <span id="lobby-players">1</span>/20</p>
+        <button id="cancel-matchmaking-btn">Anuluj</button>
+    </div>
+
+    <div id="rebirth-menu" class="hidden">
+        <h2>System Rebirth</h2>
+        <p>Zbieraj punkty, aby wykonać Rebirth i zyskać stałe wzmocnienia.</p>
+        <p>Wymagane: <span id="rebirth-cost-ui" style="color: #f1c40f;">100</span> pkt</p>
+        <p>Posiadasz: <span id="eaten-count-ui">0</span> pkt</p>
+        <p>Mnożnik Wzrostu: <span id="multiplier-ui" style="color: #2ecc71;">1</span>x</p>
+        <button id="do-rebirth-btn">Wykonaj Rebirth</button>
+        <button id="rebirth-back-btn">Powrót</button>
+    </div>
+
+    <div id="mission-menu" class="hidden">
+        <h2>Misje i Wyzwania</h2>
+        <div class="mission-item">
+            <h3>Władca Koszmarów</h3>
+            <p>Wygraj 3 razy na Trudnym poziomie trudności.</p>
+            <p>Postęp: <span id="hard-wins-count">0</span>/3</p>
+            <p style="color: #f1c40f;">Nagroda: Skórka Skorpiona (DARMO!)</p>
+        </div>
+        <button id="mission-back-btn">Powrót</button>
+    </div>
+
+    <div id="unlock-animation" class="hidden">
+        <div class="unlock-content">
+            <h1 class="unlock-title">NOWA SKÓRKA!</h1>
+            <div class="scorpion-preview"></div>
+            <h2>SKORPION ODBLOKOWANY</h2>
+            <button id="close-unlock-btn">Wspaniale!</button>
+        </div>
+    </div>
+
+    <div id="skin-menu" class="hidden">
+        <h2>Garderoba</h2>
+        <div id="skin-list" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+            <div class="skin-item">
+                <h3>Żuk</h3>
+                <p style="font-size: 14px;">Domyślny robal</p>
+                <button class="select-skin-btn" data-skin="beetle">Wybierz</button>
+            </div>
+            <div class="skin-item">
+                <h3>Pająk</h3>
+                <p style="font-size: 14px; color: #e74c3c;">+50% DMG</p>
+                <button id="buy-spider-btn">Kup (200 pkt)</button>
+            </div>
+            <div class="skin-item">
+                <h3>Mrówka</h3>
+                <p style="font-size: 14px; color: #e67e22;">+100% DMG & Speed</p>
+                <button id="buy-ant-btn">Kup (1000 pkt)</button>
+            </div>
+            <div class="skin-item">
+                <h3>Pszczoła</h3>
+                <p style="font-size: 14px; color: #f1c40f;">+200% DMG & +150% Speed</p>
+                <button id="buy-bee-btn">Kup (1500 pkt)</button>
+            </div>
+            <div class="skin-item scorpion-item">
+                <h3>Skorpion</h3>
+                <p style="font-size: 14px; color: #9b59b2;">ELITARNY: Toksyczna Superatak</p>
+                <button id="buy-scorpion-btn">Kup (5000 pkt)</button>
+            </div>
+        </div>
+        <button id="back-btn">Powrót</button>
+    </div>
+
+    <canvas id="gameCanvas" class="hidden"></canvas>
+    <div id="leaderboard" class="hidden"></div>
+
+    <div id="mobile-controls" class="hidden">
+        <div id="joystick-zone">
+            <div id="joystick-base">
+                <div id="joystick-handle"></div>
+            </div>
+        </div>
+        <div id="attack-buttons">
+            <button id="mobile-dash-btn" class="mobile-btn">DASH</button>
+            <button id="mobile-attack-lpm-btn" class="mobile-btn">ATAK 1</button>
+            <button id="mobile-attack-ppm-btn" class="mobile-btn">ATAK 2</button>
+            <button id="mobile-super-btn" class="mobile-btn hidden">SUPER</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

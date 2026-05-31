@@ -131,64 +131,8 @@ function deleteProject(index) {
 
 function openGame(url) {
     document.body.style.overflow = 'hidden';
-    gameFrame.src = "about:blank";
-    
-    setTimeout(() => {
-        gameFrame.src = url;
-        gameModal.style.display = 'block';
-        
-        gameFrame.onload = () => {
-            try {
-                const style = document.createElement('style');
-                style.textContent = `
-                    body, html { 
-                        margin: 0; 
-                        padding: 0; 
-                        overflow: auto !important; 
-                        width: 100%; 
-                        height: 100%; 
-                        display: block;
-                        background: #000; 
-                    }
-                    canvas { 
-                        display: block !important;
-                        max-width: 100% !important;
-                        height: auto !important;
-                        margin: 0 auto;
-                    }
-                    /* Specific fixes for games with layouts */
-                    #game-wrapper, #screens, .screen, #game-container {
-                        min-height: 100vh;
-                        width: 100%;
-                        max-width: 1000px;
-                        margin: 0 auto;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        position: relative;
-                        left: 0;
-                        transform: none;
-                    }
-                    /* Shop fix for Brawl Stars - keep it in flow */
-                    #shop-screen {
-                        justify-content: flex-start;
-                        padding-top: 50px;
-                        overflow-y: auto;
-                    }
-                    .shop-items {
-                        display: flex;
-                        flex-wrap: wrap;
-                        justify-content: center;
-                        gap: 20px;
-                        padding: 20px;
-                    }
-                `;
-                gameFrame.contentDocument.head.appendChild(style);
-            } catch (e) {
-                console.log("Cross-origin or error injecting CSS");
-            }
-        };
-    }, 10);
+    gameFrame.src = url;
+    gameModal.style.display = 'block';
 }
 
 function closeGame() {

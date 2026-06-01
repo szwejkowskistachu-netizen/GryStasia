@@ -1,7 +1,7 @@
 import { GameScene } from './game.js';
 
 export const config = {
-    type: Phaser.CANVAS,
+    type: Phaser.AUTO, // Changed to AUTO for better compatibility
     width: 800,
     height: 600,
     parent: 'game-container',

@@ -1,5 +1,5 @@
 /**
- * Geometry Dash - Geometry and Object Structure
+ * Geometry Dash - Enhanced with Menu, Levels, Coins, Shop and Music
  */
 
 // --- Basic Geometry Classes ---
@@ -41,7 +41,6 @@ class Triangle {
         this.p3 = p3;
     }
 
-    // Helper for collision detection with rect
     getVertices() {
         return [this.p1, this.p2, this.p3];
     }
@@ -55,6 +54,7 @@ class GameObject {
         this.size = { width, height };
         this.type = type;
         this.color = '#fff';
+        this.active = true;
     }
 
     get bounds() {
@@ -65,32 +65,35 @@ class GameObject {
 class Player extends GameObject {
     constructor(x, y) {
         super(x, y, 30, 30, 'player');
-        this.color = '#00ff00';
+        this.color = localStorage.getItem('playerColor') || '#00ff00';
         this.velocity = { x: 5, y: 0 };
         this.gravity = 0.6;
         this.jumpForce = -12;
         this.onGround = false;
-        // Save spawn position for resets
         this.spawnPos = new Point(x, y);
+        this.dead = false;
     }
 
     reset() {
         this.pos.x = this.spawnPos.x;
         this.pos.y = this.spawnPos.y;
         this.velocity.y = 0;
+        this.dead = false;
+        if (gameState.currentMusic) {
+            gameState.currentMusic.currentTime = 0;
+            gameState.currentMusic.play().catch(e => console.log("Music play blocked"));
+        }
     }
 
     update() {
-        // Apply gravity
+        if (this.dead) return;
         this.velocity.y += this.gravity;
-        
-        // Move
         this.pos.x += this.velocity.x;
         this.pos.y += this.velocity.y;
     }
 
     jump() {
-        if (this.onGround) {
+        if (this.onGround && !this.dead) {
             this.velocity.y = this.jumpForce;
             this.onGround = false;
         }
@@ -120,6 +123,13 @@ class Obstacle extends GameObject {
     }
 }
 
+class Coin extends GameObject {
+    constructor(x, y) {
+        super(x, y, 20, 20, 'coin');
+        this.color = '#f4b400';
+    }
+}
+
 class Goal extends GameObject {
     constructor(x, y, width, height) {
         super(x, y, width, height, 'goal');
@@ -136,9 +146,7 @@ class Camera {
     }
 
     follow(player) {
-        // Simple horizontal tracking
         this.pos.x = player.pos.x - this.viewportSize.width / 4;
-        // Keep some vertical context, but can be adjusted
         this.pos.y = 0; 
     }
 
@@ -148,26 +156,33 @@ class Camera {
 }
 
 class World {
-    constructor(gridSize = 30) {
+    constructor(gridSize = 40) {
         this.gridSize = gridSize;
-        this.objects = [];
         this.platforms = [];
         this.obstacles = [];
+        this.coins = [];
         this.player = null;
         this.goal = null;
     }
 
     addObject(obj) {
-        this.objects.push(obj);
         if (obj instanceof Platform) this.platforms.push(obj);
         if (obj instanceof Obstacle) this.obstacles.push(obj);
+        if (obj instanceof Coin) this.coins.push(obj);
         if (obj instanceof Player) this.player = obj;
         if (obj instanceof Goal) this.goal = obj;
     }
 
-    // Grid coordinate conversion
     gridToWorld(gx, gy) {
         return new Point(gx * this.gridSize, gy * this.gridSize);
+    }
+
+    clear() {
+        this.platforms = [];
+        this.obstacles = [];
+        this.coins = [];
+        this.player = null;
+        this.goal = null;
     }
 }
 
@@ -211,39 +226,192 @@ class Renderer {
         this.ctx.fill();
     }
 
+    drawCoin(coin, camera) {
+        const screenPos = camera.worldToScreen(new Point(coin.pos.x + coin.size.width/2, coin.pos.y + coin.size.height/2));
+        this.ctx.fillStyle = coin.color;
+        this.ctx.beginPath();
+        this.ctx.arc(screenPos.x, screenPos.y, coin.size.width/2, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#fff';
+        this.ctx.stroke();
+    }
+
     render(world, camera) {
         this.clear();
-
-        // 1. Background (could be handled separately)
         
-        // 2. Platforms
+        // Background color
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        if (!world.player) return;
+
         world.platforms.forEach(p => this.drawRect(p.bounds, p.color, camera));
-
-        // 3. Obstacles
         world.obstacles.forEach(o => {
-            if (o.shape === 'triangle') {
-                this.drawTriangle(o.triangle, o.color, camera);
-            } else {
-                this.drawRect(o.bounds, o.color, camera);
-            }
+            if (o.shape === 'triangle') this.drawTriangle(o.triangle, o.color, camera);
+            else this.drawRect(o.bounds, o.color, camera);
         });
-
-        // 4. Player
-        if (world.player) {
-            this.drawRect(world.player.bounds, world.player.color, camera);
-        }
-
-        // 5. Interface (placeholders)
+        world.coins.forEach(c => { if (c.active) this.drawCoin(c, camera); });
+        if (world.goal) this.drawRect(world.goal.bounds, world.goal.color, camera);
+        if (world.player) this.drawRect(world.player.bounds, world.player.color, camera);
     }
 }
 
-// --- Physics & Logic ---
+// --- Game Logic ---
+
+const gameState = {
+    coins: parseInt(localStorage.getItem('coins')) || 0,
+    ownedSkins: JSON.parse(localStorage.getItem('ownedSkins')) || ['#00ff00'],
+    currentScreen: 'main-menu',
+    currentMusic: null,
+    inGame: false
+};
+
+const skins = [
+    { name: 'Green', color: '#00ff00', price: 0 },
+    { name: 'Blue', color: '#0000ff', price: 10 },
+    { name: 'Red', color: '#ff0000', price: 20 },
+    { name: 'Yellow', color: '#ffff00', price: 30 },
+    { name: 'Purple', color: '#800080', price: 50 },
+    { name: 'Cyan', color: '#00ffff', price: 100 }
+];
+
+const levels = [
+    {
+        name: 'Stereo Madness',
+        music: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+        data: [
+            ['platform', 0, 10, 100, 1],
+            ['obstacle', 15, 9, 1, 1],
+            ['coin', 20, 8],
+            ['obstacle', 30, 9, 1, 1],
+            ['obstacle', 31, 9, 1, 1],
+            ['coin', 40, 7],
+            ['platform', 50, 7, 5, 1],
+            ['obstacle', 52, 6, 1, 1],
+            ['goal', 90, 8, 2, 2]
+        ]
+    },
+    {
+        name: 'Back on Track',
+        music: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+        data: [
+            ['platform', 0, 10, 120, 1],
+            ['obstacle', 10, 9, 1, 1],
+            ['obstacle', 25, 9, 1, 1, 'rect'],
+            ['coin', 30, 7],
+            ['platform', 40, 7, 10, 1],
+            ['obstacle', 45, 6, 1, 1],
+            ['coin', 60, 9],
+            ['obstacle', 70, 9, 2, 1, 'rect'],
+            ['goal', 110, 8, 2, 2]
+        ]
+    },
+    {
+        name: 'Polargeist',
+        music: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+        data: [
+            ['platform', 0, 10, 150, 1],
+            ['platform', 10, 7, 5, 1],
+            ['obstacle', 12, 6, 1, 1],
+            ['coin', 12, 5],
+            ['obstacle', 30, 9, 1, 1],
+            ['obstacle', 32, 9, 1, 1],
+            ['obstacle', 34, 9, 1, 1],
+            ['platform', 50, 6, 5, 1],
+            ['platform', 60, 4, 5, 1],
+            ['coin', 62, 3],
+            ['goal', 140, 8, 2, 2]
+        ]
+    }
+];
+
+function updateUI() {
+    document.getElementById('coin-count').innerText = gameState.coins;
+    renderShop();
+}
+
+function showScreen(screenId) {
+    document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById(screenId).classList.remove('hidden');
+    gameState.currentScreen = screenId;
+    
+    if (screenId === 'main-menu') {
+        if (gameState.currentMusic) {
+            gameState.currentMusic.pause();
+            gameState.currentMusic = null;
+        }
+        gameState.inGame = false;
+    }
+}
+
+function renderShop() {
+    const grid = document.getElementById('skin-grid');
+    grid.innerHTML = '';
+    skins.forEach(skin => {
+        const isOwned = gameState.ownedSkins.includes(skin.color);
+        const item = document.createElement('div');
+        item.className = 'skin-item';
+        item.style.backgroundColor = skin.color;
+        item.innerHTML = `
+            <div style="margin-top: 40px; background: rgba(0,0,0,0.5); padding: 5px;">
+                ${skin.name}<br>
+                ${isOwned ? 'OWNED' : skin.price + ' 🟡'}
+            </div>
+        `;
+        item.onclick = () => {
+            if (isOwned) {
+                localStorage.setItem('playerColor', skin.color);
+                if (gameWorld.player) gameWorld.player.color = skin.color;
+                alert('Skin selected!');
+            } else if (gameState.coins >= skin.price) {
+                gameState.coins -= skin.price;
+                gameState.ownedSkins.push(skin.color);
+                localStorage.setItem('coins', gameState.coins);
+                localStorage.setItem('ownedSkins', JSON.stringify(gameState.ownedSkins));
+                updateUI();
+                alert('Skin bought!');
+            } else {
+                alert('Not enough coins!');
+            }
+        };
+        grid.appendChild(item);
+    });
+}
+
+function startLevel(index) {
+    const level = levels[index];
+    gameWorld.clear();
+    
+    // Spawn player
+    const plPos = gameWorld.gridToWorld(2, 10);
+    const player = new Player(plPos.x, plPos.y - 40);
+    gameWorld.addObject(player);
+
+    level.data.forEach(data => {
+        const [type, gx, gy, gw, gh, extra] = data;
+        const pos = gameWorld.gridToWorld(gx, gy);
+        
+        if (type === 'platform') gameWorld.addObject(new Platform(pos.x, pos.y, gw * gameWorld.gridSize, gh * gameWorld.gridSize));
+        else if (type === 'obstacle') gameWorld.addObject(new Obstacle(pos.x, pos.y, (gw||1) * gameWorld.gridSize, (gh||1) * gameWorld.gridSize, extra || 'triangle'));
+        else if (type === 'coin') gameWorld.addObject(new Coin(pos.x, pos.y));
+        else if (type === 'goal') gameWorld.addObject(new Goal(pos.x, pos.y, gw * gameWorld.gridSize, gh * gameWorld.gridSize));
+    });
+
+    // Music
+    if (gameState.currentMusic) gameState.currentMusic.pause();
+    gameState.currentMusic = new Audio(level.music);
+    gameState.currentMusic.loop = true;
+    gameState.currentMusic.play().catch(e => console.log("Music play blocked by browser"));
+
+    showScreen('none'); // Hide all screens
+    gameState.inGame = true;
+    updateUI();
+}
 
 function resolveCollisions(player, world) {
     player.onGround = false;
     const playerRect = player.bounds;
 
-    // 1. Reset if fell off
     if (player.pos.y > 1000) {
         player.reset();
         return;
@@ -252,21 +420,17 @@ function resolveCollisions(player, world) {
     for (const platform of world.platforms) {
         const platRect = platform.bounds;
         if (playerRect.intersects(platRect)) {
-            // Collision from top
             if (player.velocity.y > 0 && playerRect.bottom > platRect.top && playerRect.centerY < platRect.top) {
                 player.pos.y = platRect.top - player.size.height;
                 player.velocity.y = 0;
                 player.onGround = true;
-            }
-            // Side collision (death in Geometry Dash)
-            else if (playerRect.right > platRect.left && playerRect.left < platRect.left && playerRect.bottom > platRect.top + 5) {
+            } else if (playerRect.right > platRect.left && playerRect.left < platRect.left && playerRect.bottom > platRect.top + 5) {
                 player.reset();
                 return;
             }
         }
     }
 
-    // 2. Check obstacles (death)
     for (const obstacle of world.obstacles) {
         if (playerRect.intersects(obstacle.bounds)) {
             player.reset();
@@ -274,10 +438,18 @@ function resolveCollisions(player, world) {
         }
     }
 
-    // 3. Check goal
+    for (const coin of world.coins) {
+        if (coin.active && playerRect.intersects(coin.bounds)) {
+            coin.active = false;
+            gameState.coins++;
+            localStorage.setItem('coins', gameState.coins);
+            updateUI();
+        }
+    }
+
     if (world.goal && playerRect.intersects(world.goal.bounds)) {
         alert("Level Complete!");
-        player.reset();
+        showScreen('level-select');
     }
 }
 
@@ -287,85 +459,29 @@ const gameWorld = new World(40);
 const gameCamera = new Camera(window.innerWidth, window.innerHeight);
 const gameRenderer = new Renderer('gameCanvas');
 
-// --- Level Design (Larger Map) ---
-
-// Spawn player first to have a reference
-const plPos = gameWorld.gridToWorld(2, 10);
-const player = new Player(plPos.x, plPos.y - 40);
-gameWorld.addObject(player);
-
-const levelData = [
-    // [type, gx, gy, gw, gh, extra]
-    // Ciągła podłoga na całym poziomie
-    ['platform', 0, 10, 150, 1],
-    
-    // Przeszkody na podłodze
-    ['obstacle', 12, 9, 1, 1, 'triangle'], 
-    ['obstacle', 20, 9, 1, 1, 'triangle'], 
-    ['obstacle', 21, 9, 1, 1, 'triangle'], 
-    
-    ['obstacle', 30, 9, 1, 1, 'rect'], 
-    ['obstacle', 38, 9, 1, 1, 'triangle'],
-    ['obstacle', 45, 9, 1, 1, 'rect'],
-    
-    // Platformy wiszące (dodatkowe wyzwanie, ale pod spodem jest ziemia)
-    ['platform', 60, 7, 10, 1],
-    ['obstacle', 64, 6, 1, 1, 'triangle'],
-    
-    // Schody
-    ['platform', 75, 9, 5, 1],
-    ['platform', 80, 8, 5, 1],
-    ['platform', 85, 7, 5, 1],
-    
-    // Rytmiczne przeszkody na końcu
-    ['obstacle', 100, 9, 1, 1, 'triangle'],
-    ['obstacle', 105, 9, 1, 1, 'triangle'],
-    ['obstacle', 110, 9, 1, 1, 'triangle'],
-    ['obstacle', 115, 9, 1, 1, 'triangle'],
-    ['obstacle', 120, 9, 1, 1, 'triangle'],
-    
-    ['obstacle', 130, 9, 2, 1, 'rect'],
-    
-    // Meta
-    ['goal', 145, 8, 2, 2]
-];
-
-levelData.forEach(data => {
-    const [type, gx, gy, gw, gh, extra] = data;
-    const pos = gameWorld.gridToWorld(gx, gy);
-    const size = { w: gw * gameWorld.gridSize, h: gh * gameWorld.gridSize };
-    
-    if (type === 'platform') {
-        gameWorld.addObject(new Platform(pos.x, pos.y, size.w, size.h));
-    } else if (type === 'obstacle') {
-        gameWorld.addObject(new Obstacle(pos.x, pos.y, size.w, size.h, extra || 'triangle'));
-    } else if (type === 'goal') {
-        gameWorld.addObject(new Goal(pos.x, pos.y, size.w, size.h));
-    }
-});
-
-// Input handling
 window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' || e.code === 'ArrowUp') {
-        player.jump();
-    }
+    if (e.code === 'Space' || e.code === 'ArrowUp') playerJump();
+    if (e.code === 'Escape') showScreen('main-menu');
 });
-window.addEventListener('mousedown', () => player.jump());
-window.addEventListener('touchstart', () => player.jump());
+window.addEventListener('mousedown', () => playerJump());
+window.addEventListener('touchstart', () => playerJump());
 
-// Start loop
+function playerJump() {
+    if (gameWorld.player) gameWorld.player.jump();
+}
+
 function loop() {
-    // 1. Update logic
-    player.update();
-    resolveCollisions(player, gameWorld);
-    
-    // 2. Camera follow
-    gameCamera.follow(player);
-    
-    // 3. Draw
-    gameRenderer.render(gameWorld, gameCamera);
-    
+    if (gameState.inGame && gameWorld.player) {
+        gameWorld.player.update();
+        resolveCollisions(gameWorld.player, gameWorld);
+        gameCamera.follow(gameWorld.player);
+        gameRenderer.render(gameWorld, gameCamera);
+    } else {
+        // Even when not in game, we should clear the canvas or draw a background
+        gameRenderer.clear();
+    }
     requestAnimationFrame(loop);
 }
 
+updateUI();
 loop();

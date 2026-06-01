@@ -14,17 +14,129 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
         }
         canvas {
-            background-color: #000;
             display: block;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            width: 100%;
+            height: 100%;
         }
+        .ui-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10;
+        }
+        .hidden { display: none !important; }
+        
+        h1 { font-size: 3rem; margin-bottom: 2rem; text-shadow: 2px 2px #ff0000; }
+        .menu-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            margin: 10px;
+            cursor: pointer;
+            background: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            transition: transform 0.2s;
+            min-width: 200px;
+        }
+        .menu-btn:hover { transform: scale(1.1); background: #45a049; }
+        .shop-btn { background: #f4b400; }
+        .back-btn { background: #d93025; }
+
+        .stats {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .coin-icon { color: #f4b400; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+        .skin-item, .level-item {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .skin-item:hover, .level-item:hover { border-color: #fff; }
+        .locked { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="stats-ui" class="stats">
+            <span class="coin-icon">🟡</span> <span id="coin-count">0</span>
+        </div>
+
+        <!-- Main Menu -->
+        <div id="main-menu" class="ui-screen">
+            <h1>GEOMETRY DASH CLONE</h1>
+            <button class="menu-btn" onclick="showScreen('level-select')">PLAY</button>
+            <button class="menu-btn shop-btn" onclick="showScreen('shop')">SHOP</button>
+        </div>
+
+        <!-- Level Selection -->
+        <div id="level-select" class="ui-screen hidden">
+            <h1>SELECT LEVEL</h1>
+            <div class="grid">
+                <div class="level-item" onclick="startLevel(0)">
+                    <h3>Stereo Madness</h3>
+                    <p>Easy</p>
+                    <small>Music: SoundHelix 1</small>
+                </div>
+                <div class="level-item" onclick="startLevel(1)">
+                    <h3>Back on Track</h3>
+                    <p>Normal</p>
+                    <small>Music: SoundHelix 2</small>
+                </div>
+                <div class="level-item" onclick="startLevel(2)">
+                    <h3>Polargeist</h3>
+                    <p>Hard</p>
+                    <small>Music: SoundHelix 3</small>
+                </div>
+            </div>
+            <button class="menu-btn back-btn" onclick="showScreen('main-menu')">BACK</button>
+        </div>
+
+        <!-- Shop -->
+        <div id="shop" class="ui-screen hidden">
+            <h1>SKIN SHOP</h1>
+            <div class="grid" id="skin-grid">
+                <!-- Skins will be injected by JS -->
+            </div>
+            <button class="menu-btn back-btn" onclick="showScreen('main-menu')">BACK</button>
+        </div>
+    </div>
+
     <script src="game.js"></script>
 </body>
 </html>

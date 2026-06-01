@@ -239,11 +239,11 @@ class Renderer {
     render(world, camera) {
         this.clear();
         
-        // Background color
-        this.ctx.fillStyle = '#000';
+        // Always draw background
+        this.ctx.fillStyle = '#111'; // Slightly lighter black to see if it renders
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        if (!world.player) return;
+        if (!world.player || !gameState.inGame) return;
 
         world.platforms.forEach(p => this.drawRect(p.bounds, p.color, camera));
         world.obstacles.forEach(o => {
@@ -384,24 +384,35 @@ function startLevel(index) {
     
     // Spawn player
     const plPos = gameWorld.gridToWorld(2, 10);
-    const player = new Player(plPos.x, plPos.y - 40);
-    gameWorld.addObject(player);
+    const playerObj = new Player(plPos.x, plPos.y - 40);
+    gameWorld.addObject(playerObj);
 
     level.data.forEach(data => {
         const [type, gx, gy, gw, gh, extra] = data;
         const pos = gameWorld.gridToWorld(gx, gy);
         
-        if (type === 'platform') gameWorld.addObject(new Platform(pos.x, pos.y, gw * gameWorld.gridSize, gh * gameWorld.gridSize));
+        if (type === 'platform') gameWorld.addObject(new Platform(pos.x, pos.y, (gw||1) * gameWorld.gridSize, (gh||1) * gameWorld.gridSize));
         else if (type === 'obstacle') gameWorld.addObject(new Obstacle(pos.x, pos.y, (gw||1) * gameWorld.gridSize, (gh||1) * gameWorld.gridSize, extra || 'triangle'));
         else if (type === 'coin') gameWorld.addObject(new Coin(pos.x, pos.y));
-        else if (type === 'goal') gameWorld.addObject(new Goal(pos.x, pos.y, gw * gameWorld.gridSize, gh * gameWorld.gridSize));
+        else if (type === 'goal') gameWorld.addObject(new Goal(pos.x, pos.y, (gw||1) * gameWorld.gridSize, (gh||1) * gameWorld.gridSize));
     });
 
-    // Music
-    if (gameState.currentMusic) gameState.currentMusic.pause();
-    gameState.currentMusic = new Audio(level.music);
-    gameState.currentMusic.loop = true;
-    gameState.currentMusic.play().catch(e => console.log("Music play blocked by browser"));
+    // Music - handle potential file:// or CORS errors
+    try {
+        if (gameState.currentMusic) {
+            gameState.currentMusic.pause();
+            gameState.currentMusic = null;
+        }
+        gameState.currentMusic = new Audio();
+        gameState.currentMusic.crossOrigin = "anonymous";
+        gameState.currentMusic.src = level.music;
+        gameState.currentMusic.loop = true;
+        gameState.currentMusic.play().catch(e => {
+            console.warn("Music play failed - likely a browser restriction or local file access issue.", e);
+        });
+    } catch (err) {
+        console.error("Audio initialization error:", err);
+    }
 
     showScreen('none'); // Hide all screens
     gameState.inGame = true;
@@ -475,11 +486,11 @@ function loop() {
         gameWorld.player.update();
         resolveCollisions(gameWorld.player, gameWorld);
         gameCamera.follow(gameWorld.player);
-        gameRenderer.render(gameWorld, gameCamera);
-    } else {
-        // Even when not in game, we should clear the canvas or draw a background
-        gameRenderer.clear();
     }
+    
+    // Always render to avoid black screen, even if just clearing with background
+    gameRenderer.render(gameWorld, gameCamera);
+    
     requestAnimationFrame(loop);
 }
 

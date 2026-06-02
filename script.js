@@ -206,7 +206,7 @@ if (resetBtn) {
         if (confirm('Czy na pewno chcesz zresetować listę projektów do domyślnych gier? Twoje dodane projekty znikną.')) {
             projects = [...defaultProjects];
             saveToLocalStorage();
-            renderProjects();
+            location.reload();
         }
     });
 }

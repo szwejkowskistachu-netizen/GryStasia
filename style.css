@@ -122,6 +122,13 @@ h1, h2 {
     }
 }
 
+/* Ukryj sterowanie na komputerach (myszka + brak dotyku) */
+@media (hover: hover) and (pointer: fine) {
+    .mobile-controls {
+        display: none !important;
+    }
+}
+
 .dpad, .action-buttons {
     display: flex;
     flex-direction: column;

@@ -55,52 +55,10 @@ const defaultProjects = [
         url: "hoorror/index.html"
     },
     {
-        name: "Kółko i Krzyżyk",
-        description: "Niepokonane AI używające algorytmu minimax.",
+        name: "Programowanie robotów",
+        description: "Programuj roboty i pokonaj AI.",
         status: "gotowe",
         url: "gra/index.html"
-    },
-    {
-        name: "Snake",
-        description: "Wąż, który sam szuka jedzenia i omija ogon.",
-        status: "gotowe",
-        url: "snake-jungle/Snake/index.html"
-    },
-    {
-        name: "Game of Life",
-        description: "Kultowa symulacja komórkowa Conwaya.",
-        status: "gotowe",
-        url: "geny/index.html"
-    },
-    {
-        name: "Symulacja Mrówek",
-        description: "Inteligencja rojowa i szukanie najkrótszej drogi.",
-        status: "gotowe",
-        url: "Robale/index.html"
-    },
-    {
-        name: "Flappy Bird",
-        description: "Ewolucja i uczenie maszynowe w locie.",
-        status: "gotowe",
-        url: "flappy bird/index.html"
-    },
-    {
-        name: "Chatbot",
-        description: "Twój własny asystent w przeglądarce.",
-        status: "gotowe",
-        url: "SZWEJA GPT/index.html"
-    },
-    {
-        name: "Pong",
-        description: "Klasyk w wersji przeciwko komputerowi.",
-        status: "gotowe",
-        url: "brawlstars/index.html"
-    },
-    {
-        name: "Symulacja Boids",
-        description: "Zachowanie stada ptaków na Twoim ekranie.",
-        status: "gotowe",
-        url: "geny/index.html"
     }
 ];
 

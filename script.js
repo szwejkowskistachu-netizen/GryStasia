@@ -55,18 +55,6 @@ const defaultProjects = [
         url: "hoorror/index.html"
     },
     {
-        name: "Super RPG",
-        description: "Epicka przygoda w świecie fantasy.",
-        status: "gotowe",
-        url: "super rpg/index.html"
-    },
-    {
-        name: "Geometry Dash",
-        description: "Dynamiczna gra rytmiczna.",
-        status: "gotowe",
-        url: "geometry dash/index.html"
-    },
-    {
         name: "Kółko i Krzyżyk",
         description: "Niepokonane AI używające algorytmu minimax.",
         status: "gotowe",

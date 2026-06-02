@@ -1,5 +1,24 @@
 // Initial Example Projects
-const defaultProjects = [];
+const defaultProjects = [
+    {
+        name: "Programowanie robotów",
+        description: "Programuj roboty i pokonaj AI.",
+        status: "gotowe",
+        url: "gra/index.html"
+    },
+    {
+        name: "Snake",
+        description: "Klasyczny wąż sterowany przez AI.",
+        status: "gotowe",
+        url: "snake-jungle/Snake/index.html"
+    },
+    {
+        name: "Brawl Stars",
+        description: "Twoja wersja Brawl Stars.",
+        status: "gotowe",
+        url: "brawlstars/index.html"
+    }
+];
 
 // State Management
 let projects = JSON.parse(localStorage.getItem('myAIProjects')) || [...defaultProjects];

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Dash Clone</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="stats">
+                <span id="attempt-count">Attempt 1</span>
+                <span id="percent-complete">0%</span>
+            </div>
+
+            <!-- Menu Layer -->
+            <div id="menu-layer">
+                <h1>GEOMETRY DASH CLONE</h1>
+                <button class="menu-button" onclick="openLevelSelect()">PLAY</button>
+                <button class="menu-button" onclick="openEditor()">EDITOR</button>
+                <div style="font-size: 12px; margin-top: 20px;">Use Space or Up Arrow to jump/fly</div>
+            </div>
+
+            <!-- Level Select Layer -->
+            <div id="level-select" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: auto;">
+                <h2>SELECT LEVEL</h2>
+                <div id="level-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 70%; overflow-y: auto; padding: 20px;"></div>
+                <button class="menu-button" style="background: #FF4136; margin-top: 20px;" onclick="location.reload()">BACK</button>
+            </div>
+
+            <!-- Editor UI -->
+            <div id="editor-ui" class="hidden">
+                <div class="editor-item selected" data-type="block" onclick="selectType('block')">🟦</div>
+                <div class="editor-item" data-type="spike" onclick="selectType('spike')">🔺</div>
+                <div class="editor-item" data-type="orb" onclick="selectType('orb')">🟡</div>
+                <div class="editor-item" data-type="pad" onclick="selectType('pad')">🟨</div>
+                <div class="editor-item" data-type="portal_ship" onclick="selectType('portal_ship')">🟩</div>
+                <div class="editor-item" data-type="portal_cube" onclick="selectType('portal_cube')">🟪</div>
+                <div class="editor-item" data-type="delete" onclick="selectType('delete')">❌</div>
+                <div style="color:white; font-size: 10px; margin: 0 10px;">Arrows: Move Cam</div>
+                <button onclick="saveLevel()">SAVE</button>
+                <button onclick="startGame()">PLAY</button>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

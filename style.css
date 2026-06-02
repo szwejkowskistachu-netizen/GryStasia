@@ -82,12 +82,88 @@ h1, h2 {
     -webkit-text-fill-color: transparent;
 }
 
+.about-container {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.about-box {
+    flex: 1;
+    min-width: 300px;
+}
+
 .about-content {
     background-color: var(--card-bg);
     padding: 2rem;
     border-radius: 12px;
     border: 1px solid #334155;
+    height: 100%;
 }
+
+/* Mobile Controls */
+.mobile-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+    pointer-events: none;
+    z-index: 2020;
+    opacity: 0.8;
+}
+
+/* Show only on touch or small screens */
+@media (hover: none) and (pointer: coarse), (max-width: 1024px) {
+    .mobile-controls {
+        display: flex;
+    }
+}
+
+.dpad, .action-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: auto;
+}
+
+.dpad-middle {
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    margin: 5px;
+}
+
+.control-btn:active {
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0.9);
+}
+
+.action-buttons {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.action-a { background: rgba(34, 197, 94, 0.4); }
+.action-b { background: rgba(239, 68, 68, 0.4); }
 
 /* Project Cards */
 .projects-grid {

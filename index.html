@@ -27,10 +27,21 @@
         </section>
 
         <section id="about" class="about">
-            <h2>O mnie</h2>
-            <div class="about-content">
-                <p>Jestem <strong>Twórcą gier AI</strong>.</p>
-                <p>Uwielbiam programowanie i tworzenie inteligentnych systemów. Moim głównym celem jest budowanie gier AI i symulacji, które żyją własnym życiem. Obecnie intensywnie uczę się JavaScript, aby realizować swoje wizje w przeglądarce.</p>
+            <div class="about-container">
+                <div class="about-box">
+                    <h2>O mnie</h2>
+                    <div class="about-content">
+                        <p>Jestem <strong>Staś</strong>, Twórca gier AI.</p>
+                        <p>Uwielbiam programowanie i tworzenie inteligentnych systemów. Moim głównym celem jest budowanie gier AI i symulacji, które żyją własnym życiem. Obecnie intensywnie uczę się JavaScript, aby realizować swoje wizje w przeglądarce.</p>
+                    </div>
+                </div>
+                <div class="about-box">
+                    <h2>Pan</h2>
+                    <div class="about-content">
+                        <p>Witaj w sekcji <strong>Pan</strong>. Tutaj zarządzamy wizją i kierunkiem rozwoju naszych projektów.</p>
+                        <p>Jako Pan i Władca tego cyfrowego królestwa, dbam o to, by każda linijka kodu służyła rozrywce i nauce.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -82,6 +93,22 @@
             <div id="pan-handle-bottom" class="pan-handle vertical"></div>
             
             <iframe id="game-frame" src="" frameborder="0"></iframe>
+
+            <!-- Mobile Controls Overlay -->
+            <div id="mobile-controls" class="mobile-controls">
+                <div class="dpad">
+                    <button class="control-btn up" id="ctrl-up">▲</button>
+                    <div class="dpad-middle">
+                        <button class="control-btn left" id="ctrl-left">◀</button>
+                        <button class="control-btn right" id="ctrl-right">▶</button>
+                    </div>
+                    <button class="control-btn down" id="ctrl-down">▼</button>
+                </div>
+                <div class="action-buttons">
+                    <button class="control-btn action-a" id="ctrl-a">A</button>
+                    <button class="control-btn action-b" id="ctrl-b">B</button>
+                </div>
+            </div>
         </div>
     </div>
 

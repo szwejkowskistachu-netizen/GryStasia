@@ -67,14 +67,52 @@ const defaultProjects = [
         url: "geometry dash/index.html"
     },
     {
-        name: "Taktyczna wojna AI",
-        description: "AI walczą same, ustawiasz strategie i obserwujesz wyniki.",
-        status: "plan"
+        name: "Kółko i Krzyżyk",
+        description: "Niepokonane AI używające algorytmu minimax.",
+        status: "gotowe",
+        url: "gra/index.html"
     },
     {
-        name: "Kolonia Marsjańska",
-        description: "Zarządzanie bazą i przetrwanie kolonistów.",
-        status: "plan"
+        name: "Snake",
+        description: "Wąż, który sam szuka jedzenia i omija ogon.",
+        status: "gotowe",
+        url: "snake-jungle/Snake/index.html"
+    },
+    {
+        name: "Game of Life",
+        description: "Kultowa symulacja komórkowa Conwaya.",
+        status: "gotowe",
+        url: "geny/index.html"
+    },
+    {
+        name: "Symulacja Mrówek",
+        description: "Inteligencja rojowa i szukanie najkrótszej drogi.",
+        status: "gotowe",
+        url: "Robale/index.html"
+    },
+    {
+        name: "Flappy Bird",
+        description: "Ewolucja i uczenie maszynowe w locie.",
+        status: "gotowe",
+        url: "flappy bird/index.html"
+    },
+    {
+        name: "Chatbot",
+        description: "Twój własny asystent w przeglądarce.",
+        status: "gotowe",
+        url: "SZWEJA GPT/index.html"
+    },
+    {
+        name: "Pong",
+        description: "Klasyk w wersji przeciwko komputerowi.",
+        status: "gotowe",
+        url: "brawlstars/index.html"
+    },
+    {
+        name: "Symulacja Boids",
+        description: "Zachowanie stada ptaków na Twoim ekranie.",
+        status: "gotowe",
+        url: "geny/index.html"
     }
 ];
 
@@ -133,12 +171,51 @@ function openGame(url) {
     document.body.style.overflow = 'hidden';
     gameFrame.src = url;
     gameModal.style.display = 'block';
+    setupMobileControls();
 }
 
 function closeGame() {
     gameModal.style.display = 'none';
     gameFrame.src = '';
     document.body.style.overflow = 'auto';
+}
+
+function setupMobileControls() {
+    const controls = {
+        'ctrl-up': 'ArrowUp',
+        'ctrl-down': 'ArrowDown',
+        'ctrl-left': 'ArrowLeft',
+        'ctrl-right': 'ArrowRight',
+        'ctrl-a': ' ', // Spacja
+        'ctrl-b': 'Enter'
+    };
+
+    Object.keys(controls).forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+
+        const key = controls[id];
+        
+        const handlePress = (e) => {
+            e.preventDefault();
+            const event = new KeyboardEvent('keydown', { key: key, bubbles: true });
+            gameFrame.contentWindow.dispatchEvent(event);
+            // Also dispatch to main window in case game listens there
+            window.dispatchEvent(event);
+        };
+
+        const handleRelease = (e) => {
+            e.preventDefault();
+            const event = new KeyboardEvent('keyup', { key: key, bubbles: true });
+            gameFrame.contentWindow.dispatchEvent(event);
+            window.dispatchEvent(event);
+        };
+
+        btn.ontouchstart = handlePress;
+        btn.ontouchend = handleRelease;
+        btn.onmousedown = handlePress;
+        btn.onmouseup = handleRelease;
+    });
 }
 
 // Zamknij modal po kliknięciu poza zawartość
@@ -222,10 +299,6 @@ if (adminLogin) {
 
 if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-        if (!isAdmin) {
-            alert('Tylko Twórca może resetować listę.');
-            return;
-        }
         if (confirm('Czy na pewno chcesz zresetować listę projektów do domyślnych gier? Twoje dodane projekty znikną.')) {
             projects = [...defaultProjects];
             saveToLocalStorage();

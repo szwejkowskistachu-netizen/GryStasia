@@ -7,12 +7,6 @@ const defaultProjects = [
         url: "brawlstars/index.html"
     },
     {
-        name: "Snake",
-        description: "Klasyczny wąż sterowany przez AI.",
-        status: "gotowe",
-        url: "snake-jungle/Snake/index.html"
-    },
-    {
         name: "Flappy Bird",
         description: "Ewolucja i uczenie maszynowe w locie.",
         status: "gotowe",
@@ -44,7 +38,7 @@ const defaultProjects = [
     },
     {
         name: "Robale",
-        description: "Symulacja życia robaków.",
+        description: "Gra uciekaj przed robalami.",
         status: "gotowe",
         url: "Robale/index.html"
     },
@@ -111,6 +105,12 @@ const defaultProjects = [
         name: "Kolonia Marsjańska",
         description: "Zarządzanie bazą i przetrwanie kolonistów.",
         status: "plan"
+    },
+    {
+        name: "Snake",
+        description: "Klasyczny wąż sterowany przez AI.",
+        status: "plan",
+        url: "snake-jungle/Snake/index.html"
     },
 ];
 

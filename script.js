@@ -1,10 +1,10 @@
 // Initial Example Projects
 const defaultProjects = [
     {
-        name: "Programowanie robotów",
-        description: "Programuj roboty i pokonaj AI.",
+        name: "Brawl Stars",
+        description: "Twoja wersja Brawl Stars.",
         status: "gotowe",
-        url: "gra/index.html"
+        url: "brawlstars/index.html"
     },
     {
         name: "Snake",
@@ -13,16 +13,113 @@ const defaultProjects = [
         url: "snake-jungle/Snake/index.html"
     },
     {
-        name: "Brawl Stars",
-        description: "Twoja wersja Brawl Stars.",
+        name: "Flappy Bird",
+        description: "Ewolucja i uczenie maszynowe w locie.",
         status: "gotowe",
-        url: "brawlstars/index.html"
-    }
+        url: "flappy bird/index.html"
+    },
+    {
+        name: "Cursed Realm",
+        description: "Mroczna przygoda w przeklętym świecie.",
+        status: "gotowe",
+        url: "cursed realm/index.html"
+    },
+    {
+        name: "Geny i Ewolucja",
+        description: "Symulacja genetyczna i ewolucja organizmów.",
+        status: "gotowe",
+        url: "geny/index.html"
+    },
+    {
+        name: "Wojny AI",
+        description: "Wielkie bitwy sztucznej inteligencji.",
+        status: "gotowe",
+        url: "WOJNY/index.html"
+    },
+    {
+        name: "Malpa Dwa",
+        description: "Kontynuacja przygód małpy.",
+        status: "gotowe",
+        url: "malpaDwa/index.html"
+    },
+    {
+        name: "Robale",
+        description: "Symulacja życia robaków.",
+        status: "gotowe",
+        url: "Robale/index.html"
+    },
+    {
+        name: "Wykrywacz Kłamstw",
+        description: "Zaawansowany system wykrywania prawdy.",
+        status: "gotowe",
+        url: "WYKRYWACZ KLAMSTW/index.html"
+    },
+    {
+        name: "Horror",
+        description: "Przerażająca gra typu horror.",
+        status: "gotowe",
+        url: "hoorror/index.html"
+    },
+    {
+        name: "Super RPG",
+        description: "Epicka przygoda w świecie fantasy.",
+        status: "gotowe",
+        url: "super rpg/index.html"
+    },
+    {
+        name: "Programowanie robotów",
+        description: "Programuj roboty i pokonaj AI.",
+        status: "gotowe",
+        url: "gra/index.html"
+    },
+    {
+        name: "Kółko i Krzyżyk",
+        description: "Niepokonane AI używające algorytmu minimax.",
+        status: "plan"
+    },
+    {
+        name: "Game of Life",
+        description: "Kultowa symulacja komórkowa Conwaya.",
+        status: "plan"
+    },
+    {
+        name: "Symulacja Mrówek",
+        description: "Inteligencja rojowa i szukanie najkrótszej drogi.",
+        status: "plan"
+    },
+    {
+        name: "Chatbot",
+        description: "Twój własny asystent w przeglądarce.",
+        status: "plan"
+    },
+    {
+        name: "Pong",
+        description: "Klasyk w wersji przeciwko komputerowi.",
+        status: "plan"
+    },
+    {
+        name: "Symulacja Boids",
+        description: "Zachowanie stada ptaków na Twoim ekranie.",
+        status: "plan"
+    },
+    {
+        name: "Taktyczna wojna AI",
+        description: "AI walczą same, ustawiasz strategie i obserwujesz wyniki.",
+        status: "plan"
+    },
+    {
+        name: "Kolonia Marsjańska",
+        description: "Zarządzanie bazą i przetrwanie kolonistów.",
+        status: "plan"
+    },
 ];
 
 // State Management
-let projects = JSON.parse(localStorage.getItem('myAIProjects')) || [...defaultProjects];
 let isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+
+// Zawsze używamy defaultProjects zamiast localStorage dla listy projektów,
+// aby uniknąć problemów z synchronizacją i błędów asynchronicznych
+let projects = [...defaultProjects];
 
 // DOM Elements
 const projectsContainer = document.getElementById('projects-container');
@@ -38,7 +135,7 @@ const loginStatusBar = document.getElementById('login-status-bar');
 
 // Functions
 function saveToLocalStorage() {
-    localStorage.setItem('myAIProjects', JSON.stringify(projects));
+    // Funkcja zachowana dla kompatybilności, ale projekty ładujemy z defaultProjects
 }
 
 function getStatusLabel(status) {
@@ -66,7 +163,6 @@ function deleteProject(index) {
     }
     if (confirm('Czy na pewno chcesz usunąć ten projekt?')) {
         projects.splice(index, 1);
-        saveToLocalStorage();
         renderProjects();
     }
 }
@@ -90,7 +186,7 @@ function setupMobileControls() {
         'ctrl-down': 'ArrowDown',
         'ctrl-left': 'ArrowLeft',
         'ctrl-right': 'ArrowRight',
-        'ctrl-a': ' ', // Spacja
+        'ctrl-a': ' ', 
         'ctrl-b': 'Enter'
     };
 
@@ -103,15 +199,18 @@ function setupMobileControls() {
         const handlePress = (e) => {
             e.preventDefault();
             const event = new KeyboardEvent('keydown', { key: key, bubbles: true });
-            gameFrame.contentWindow.dispatchEvent(event);
-            // Also dispatch to main window in case game listens there
+            if (gameFrame.contentWindow) {
+                gameFrame.contentWindow.dispatchEvent(event);
+            }
             window.dispatchEvent(event);
         };
 
         const handleRelease = (e) => {
             e.preventDefault();
             const event = new KeyboardEvent('keyup', { key: key, bubbles: true });
-            gameFrame.contentWindow.dispatchEvent(event);
+            if (gameFrame.contentWindow) {
+                gameFrame.contentWindow.dispatchEvent(event);
+            }
             window.dispatchEvent(event);
         };
 
@@ -122,7 +221,6 @@ function setupMobileControls() {
     });
 }
 
-// Zamknij modal po kliknięciu poza zawartość
 window.onclick = function(event) {
     if (event.target == gameModal) {
         closeGame();
@@ -159,7 +257,6 @@ function renderProjects() {
 }
 
 function updateUI() {
-    console.log("Updating UI. isAdmin:", isAdmin);
     if (isAdmin) {
         if (addProjectSection) addProjectSection.style.display = 'block';
         if (planSection) planSection.style.display = 'none';
@@ -193,59 +290,31 @@ function handleLogin() {
 }
 
 // Event Listeners
-if (btnCreatePlan) {
-    btnCreatePlan.addEventListener('click', handleLogin);
-}
-
-if (adminLogin) {
-    adminLogin.addEventListener('click', handleLogin);
-}
+if (btnCreatePlan) btnCreatePlan.addEventListener('click', handleLogin);
+if (adminLogin) adminLogin.addEventListener('click', handleLogin);
 
 if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-        if (confirm('Czy na pewno chcesz zresetować listę projektów do domyślnych gier? Twoje dodane projekty znikną.')) {
-            projects = [...defaultProjects];
-            saveToLocalStorage();
-            location.reload();
-        }
+        projects = [...defaultProjects];
+        renderProjects();
     });
 }
 
 if (projectForm) {
     projectForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
         const newProject = {
             name: document.getElementById('projectName').value,
             description: document.getElementById('projectDesc').value,
             status: document.getElementById('projectStatus').value,
             url: ""
         };
-        
         projects.push(newProject);
-        saveToLocalStorage();
         renderProjects();
-        
         projectForm.reset();
         alert('Projekt dodany pomyślnie!');
     });
 }
 
-// Automatyczna aktualizacja listy
-const storedProjects = JSON.parse(localStorage.getItem('myAIProjects'));
-if (storedProjects) {
-    let updated = false;
-    defaultProjects.forEach(defProj => {
-        if (!storedProjects.some(p => p.name === defProj.name)) {
-            projects.push(defProj);
-            updated = true;
-        }
-    });
-    if (updated) {
-        saveToLocalStorage();
-    }
-} else {
-    saveToLocalStorage();
-}
-
+// Inicjalizacja
 updateUI();
